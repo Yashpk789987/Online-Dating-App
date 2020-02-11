@@ -1,0 +1,46 @@
+{
+  "name": "WebRtcMobile",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "lint": "eslint .",
+    "flow": "flow"
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.7.1",
+    "@react-native-community/masked-view": "^0.1.6",
+    "@wazo/sdk": "^0.26.12",
+    "add": "^2.0.6",
+    "native-base": "^2.13.8",
+    "react": "16.9.0",
+    "react-native": "^0.61.5",
+    "react-native-callkeep": "^3.0.9",
+    "react-native-casino-roulette": "^1.6.0",
+    "react-native-gesture-handler": "^1.5.3",
+    "react-native-gifted-chat": "^0.13.0",
+    "react-native-incall-manager": "^3.2.7",
+    "react-native-linear-gradient": "^2.5.6",
+    "react-native-reanimated": "^1.4.0",
+    "react-native-safe-area-context": "^0.6.2",
+    "react-native-screens": "^2.0.0-alpha.23",
+    "react-native-vector-icons": "^6.6.0",
+    "react-native-webrtc": "^1.75.3",
+    "react-navigation": "^4.0.10",
+    "react-navigation-stack": "^2.0.15",
+    "react-navigation-tabs": "^2.7.0",
+    "socket.io-client": "^2.3.0",
+    "uuid": "^3.4.0",
+    "yarn": "^1.21.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.6.3",
+    "@babel/runtime": "7.6.3",
+    "@react-native-community/eslint-config": "0.0.3",
+    "eslint": "^5.16.0",
+    "flow-bin": "^0.112.0",
+    "metro-react-native-babel-preset": "0.51.1"
+  }
+}
