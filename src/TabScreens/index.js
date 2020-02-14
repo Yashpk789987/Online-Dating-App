@@ -5,6 +5,7 @@ import {createAppContainer} from 'react-navigation';
 import Home from './Home';
 import Chat from './Chat';
 import Deck from './Deck';
+import NearbyLocations from './NearbyLocations';
 import Chat2 from '../components/Chat2';
 import Profile from './Profile';
 import io from 'socket.io-client';
@@ -48,7 +49,7 @@ const TabNavigator = createBottomTabNavigator(
       screen: Chat2,
       navigationOptions: {
         tabBarLabel: <></>,
-        tabBarIcon: ({tintColor}) => <Icon name="add-circle" style={{color: tintColor}} size={25} />,
+        tabBarIcon: ({tintColor}) => <Icon name="chatboxes" style={{color: tintColor}} size={25} />,
       },
     },
     Profile: {
@@ -56,6 +57,13 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         tabBarLabel: <></>,
         tabBarIcon: ({tintColor}) => <Icon name="person" style={{color: tintColor}} size={25} />,
+      },
+    },
+    NearbyLocations: {
+      screen: NearbyLocations,
+      navigationOptions: {
+        tabBarLabel: <></>,
+        tabBarIcon: ({tintColor}) => <Icon name="wine" style={{color: tintColor}} size={25} />,
       },
     },
   },
@@ -125,7 +133,12 @@ export default class App extends React.Component {
   }
 
   render() {
-    const data = Object.assign({users: this.state.users, makeCall: this.makeCall, socketRef: this.socket});
+    const data = Object.assign({
+      users: this.state.users,
+      makeCall: this.makeCall,
+      socketRef: this.socket,
+      stackRef: this.props.navigation,
+    });
     return (
       <Container>
         <BottomTab screenProps={data} />

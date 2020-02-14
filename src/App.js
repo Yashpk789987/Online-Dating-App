@@ -13,7 +13,8 @@ import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
 import CallManager from './components/CallManager';
 import VideoCall from './components/VideoCall';
 
-import TabScreens from './TabScreens';
+// import TabScreens from './TabScreens';
+import AppStack from './AppStack';
 import VideoChatPack from './VideoChatPack';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
@@ -33,7 +34,7 @@ const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
       AuthLoading: AuthLoadingScreen,
-      App: TabScreens,
+      App: AppStack,
       Auth: AuthStack,
       VideoChatPack: VideoChatPack,
     },
@@ -47,11 +48,6 @@ export default class App extends React.Component {
   render() {
     return (
       <StyleProvider style={getTheme()}>
-        {/* <TabScreens /> */}
-        {/* <Main /> */}
-        {/* <VideoChatWithSocketIO /> */}
-        {/* <CallManager /> */}
-        {/* <VideoCall /> */}
         <AppContainer />
       </StyleProvider>
     );
