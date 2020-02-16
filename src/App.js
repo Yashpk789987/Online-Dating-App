@@ -13,7 +13,6 @@ import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
 import CallManager from './components/CallManager';
 import VideoCall from './components/VideoCall';
 
-// import TabScreens from './TabScreens';
 import AppStack from './AppStack';
 import VideoChatPack from './VideoChatPack';
 import SignUp from './components/SignUp';

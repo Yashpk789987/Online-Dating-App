@@ -17,7 +17,7 @@ import {
   ListItem,
   Radio,
 } from 'native-base';
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, RefreshControl} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 
 export default class NearbyLocations extends React.Component {
@@ -54,15 +54,20 @@ export default class NearbyLocations extends React.Component {
   };
 
   loadnearbyplaces = async () => {
-    if (this.state.allowed) {
-      this.setState({loading: true});
-      let {latitude, longitude, search, type} = this.state;
-      let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=2000&type=${type}&keyword=${search}&key=AIzaSyBRYqiA-p-B_zdWU5N4ac7DgEDWFWmZFlM`;
-      let res = await fetch(url);
-      let data = await res.json();
-      this.setState({places: data.results, loading: false});
+    try {
+      if (this.state.allowed) {
+        this.setState({loading: true});
+        let {latitude, longitude, search, type} = this.state;
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=2000&type=${type}&keyword=${search}&key=AIzaSyBRYqiA-p-B_zdWU5N4ac7DgEDWFWmZFlM`;
+        let res = await fetch(url);
+        let data = await res.json();
+        this.setState({places: data.results, loading: false});
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
   componentDidMount = async () => {
     this.setState({loading: true, type: 'restaurant'});
     if (await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)) {
@@ -72,6 +77,7 @@ export default class NearbyLocations extends React.Component {
       this.askPermissions();
     }
   };
+
   makeList = () => {
     return this.state.places.map((item, index) => {
       return (
@@ -160,7 +166,8 @@ export default class NearbyLocations extends React.Component {
         {this.state.loading ? (
           <Spinner color="white" />
         ) : (
-          <Content>
+          <Content
+            refreshControl={<RefreshControl refreshing={this.state.loading} onRefresh={this.loadnearbyplaces} />}>
             <List>{this.makeList()}</List>
           </Content>
         )}
