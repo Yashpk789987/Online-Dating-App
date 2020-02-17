@@ -1,0 +1,22 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "yash",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "forever app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "forever": "^2.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "2.1.0",
+    "nodemon": "^2.0.2",
+    "sequelize": "4.13.5",
+    "socket.io": "^2.3.0"
+  }
+}
