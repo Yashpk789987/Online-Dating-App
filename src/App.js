@@ -14,20 +14,13 @@ import CallManager from './components/CallManager';
 import VideoCall from './components/VideoCall';
 
 import AppStack from './AppStack';
+import AuthStack from './AuthStack';
 import VideoChatPack from './VideoChatPack';
-import SignUp from './components/SignUp';
-import Login from './components/Login';
+
 import Main from './components/Main';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 
 console.disableYellowBox = true;
-
-const AuthStack = createStackNavigator(
-  {Login: Login},
-  {
-    headerMode: 'none',
-  },
-);
 
 const AppContainer = createAppContainer(
   createSwitchNavigator(

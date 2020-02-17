@@ -1,12 +1,32 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {ImageBackground, StatusBar, Text, View} from 'react-native';
 import {Container, Header, Content, Item, Input, Button, DatePicker} from 'native-base';
+import {postDataWithoutToken} from '../helpers/httpServices';
+
+const initialState = {
+  username: '',
+  phone: '',
+  dob: '',
+  email: '',
+  password: '',
+  passwordConfirmation: '',
+  uploading: false,
+};
 
 export default function SignUp(props) {
-  useEffect(() => {});
+  const [{username, email, password, passwordConfirmation, dob, phone}, setState] = useState(initialState);
+
+  const clearState = () => {
+    setState({...initialState});
+  };
+
   function doSignUp() {
-    props.navigation.navigate('Home');
+    setState(prevState => ({...prevState, uploading: true}));
+    let data = {username, email, password, passwordConfirmation, dob, phone};
+    console.log(data);
+    postDataWithoutToken(`/user/create`, data);
+    //props.navigation.navigate('Home');
   }
   function setDate(date) {
     console.log(date);
@@ -32,13 +52,24 @@ export default function SignUp(props) {
             style={{color: 'white'}}
             selectionColor={'white'}
             placeholder="Username"
+            onChangeText={text => setState(prevState => ({...prevState, username: text}))}
           />
         </Item>
         <Item rounded style={{marginBottom: '10%'}}>
-          <Input placeholderTextColor={'white'} style={{color: 'white'}} placeholder="Email" />
+          <Input
+            onChangeText={text => setState(prevState => ({...prevState, email: text}))}
+            placeholderTextColor={'white'}
+            style={{color: 'white'}}
+            placeholder="Email"
+          />
         </Item>
         <Item rounded style={{marginBottom: '10%'}}>
-          <Input placeholderTextColor={'white'} style={{color: 'white'}} placeholder="Phone" />
+          <Input
+            onChangeText={text => setState(prevState => ({...prevState, phone: text}))}
+            placeholderTextColor={'white'}
+            style={{color: 'white'}}
+            placeholder="Phone"
+          />
         </Item>
         <Item rounded style={{marginBottom: '10%'}}>
           <DatePicker
@@ -57,6 +88,7 @@ export default function SignUp(props) {
         </Item>
         <Item rounded style={{marginBottom: '10%'}}>
           <Input
+            onChangeText={text => setState(prevState => ({...prevState, password: text}))}
             placeholderTextColor={'white'}
             style={{color: 'white'}}
             secureTextEntry={true}
