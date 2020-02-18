@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {ImageBackground, StatusBar, Text, View} from 'react-native';
-import {Container, Header, Content, Item, Input, Button, DatePicker} from 'native-base';
+import {Container, Header, Content, Item, Input, Button, DatePicker, Icon} from 'native-base';
 import {postDataWithoutToken} from '../helpers/httpServices';
 
 const initialState = {
@@ -15,22 +15,34 @@ const initialState = {
 };
 
 export default function SignUp(props) {
-  const [{username, email, password, passwordConfirmation, dob, phone}, setState] = useState(initialState);
-
+  const [{username, email, password, passwordConfirmation, dob, phone, uploading}, setState] = useState(initialState);
+  const [errors, setErrors] = useState([]);
   const clearState = () => {
     setState({...initialState});
   };
 
-  function doSignUp() {
+  async function doSignUp() {
     setState(prevState => ({...prevState, uploading: true}));
     let data = {username, email, password, passwordConfirmation, dob, phone};
-    console.log(data);
-    postDataWithoutToken(`/user/create`, data);
-    //props.navigation.navigate('Home');
+
+    let result = await postDataWithoutToken(`user/create`, data);
+
+    if (result.ok) {
+      //props.navigation.navigate('Home');
+    } else {
+      setErrors(result.errors);
+    }
   }
   function setDate(date) {
-    console.log(date);
+    let dob = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    setState(prevState => ({...prevState, dob: dob}));
   }
+
+  let usernameError = errors.find(item => item.path === 'username');
+  let emailError = errors.find(item => item.path === 'email');
+  let phoneError = errors.find(item => item.path === 'phone');
+  let dobError = errors.find(item => item.path === 'dob');
+  let passwordError = errors.find(item => item.path === 'password');
   return (
     <ImageBackground
       style={{
@@ -46,7 +58,11 @@ export default function SignUp(props) {
         <Text style={{color: 'white', fontSize: 30}}>Create An Acount</Text>
       </View>
       <Content style={{flex: 1}}>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Item
+          error={usernameError ? true : false}
+          success={usernameError ? false : true}
+          rounded
+          style={{marginBottom: '1%', marginTop: '2%'}}>
           <Input
             placeholderTextColor={'white'}
             style={{color: 'white'}}
@@ -54,24 +70,45 @@ export default function SignUp(props) {
             placeholder="Username"
             onChangeText={text => setState(prevState => ({...prevState, username: text}))}
           />
+          {usernameError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>{usernameError ? usernameError.message : ''}</Text>
+
+        <Item
+          success={emailError ? false : true}
+          error={emailError ? true : false}
+          rounded
+          style={{marginBottom: '1%', marginTop: '2%'}}>
           <Input
             onChangeText={text => setState(prevState => ({...prevState, email: text}))}
             placeholderTextColor={'white'}
+            keyboardType={'email-address'}
             style={{color: 'white'}}
             placeholder="Email"
           />
+          {emailError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>{emailError ? emailError.message : ''}</Text>
+        <Item
+          success={phoneError ? false : true}
+          error={phoneError ? true : false}
+          rounded
+          style={{marginBottom: '1%', marginTop: '2%'}}>
           <Input
+            keyboardType={'phone-pad'}
             onChangeText={text => setState(prevState => ({...prevState, phone: text}))}
             placeholderTextColor={'white'}
             style={{color: 'white'}}
             placeholder="Phone"
           />
+          {phoneError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>{phoneError ? phoneError.message : ''}</Text>
+        <Item
+          success={dobError ? false : true}
+          error={dobError ? true : false}
+          rounded
+          style={{marginBottom: '1%', marginTop: '2%'}}>
           <DatePicker
             maximumDate={new Date(2019, 11, 1)}
             locale={'en'}
@@ -85,8 +122,14 @@ export default function SignUp(props) {
             onDateChange={setDate}
             disabled={false}
           />
+          {dobError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>{dobError ? dobError.message : ''}</Text>
+        <Item
+          success={passwordError ? false : true}
+          error={passwordError ? true : false}
+          rounded
+          style={{marginBottom: '1%', marginTop: '2%'}}>
           <Input
             onChangeText={text => setState(prevState => ({...prevState, password: text}))}
             placeholderTextColor={'white'}
@@ -94,13 +137,22 @@ export default function SignUp(props) {
             secureTextEntry={true}
             placeholder="Password"
           />
+          {passwordError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>{passwordError ? passwordError.message : ''}</Text>
       </Content>
       <Button
+        block
         onPress={() => doSignUp()}
-        style={{backgroundColor: 'orange', width: '100%', justifyContent: 'center', alignItems: 'center'}}
-        rounded>
-        <Text style={{color: 'white', fontSize: 20}}>SignUp</Text>
+        style={{backgroundColor: 'orange', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+        {uploading ? (
+          <>
+            <Text style={{color: 'white', fontSize: 20}}>SignUp</Text>
+            <Spinner color="white" />
+          </>
+        ) : (
+          <Text style={{color: 'white', fontSize: 20}}>SignUp</Text>
+        )}
       </Button>
     </ImageBackground>
   );

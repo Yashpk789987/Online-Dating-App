@@ -53,16 +53,35 @@
 // });
 
 var express = require('express');
+var cookieParser = require('cookie-parser');
 
+var models = require('./models');
 var app = express();
 var path = require('path');
+
+//////// IMPORTING ROUTES ///////////
+
+var userRouter = require('./routes/user');
+
+//////// IMPORTING ROUTES ///////////
+
 ///////// VIEW ENGINE ///////////////
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 //////// VIEW ENGINE ///////////////
+
 ////// STATIC ///////
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 ////// STATIC ///////
+
+/////// USING ROUTES /////
+app.use('/user', userRouter);
+
+/////// USING ROUTES /////
+
 app.get('/', function(req, res) {
   res.render('chat');
 });
@@ -73,6 +92,10 @@ app.get('/connect', function(req, res) {
 
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+
+models.sequelize.sync().then(() => {
+  console.log('Database Synced');
+});
 
 server.listen(process.env.PORT || '3000', function() {
   console.log(`Example app listening on port 3000!`);

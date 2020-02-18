@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
-const getFromAsync = async key => {
+const getFromCache = async key => {
   try {
     if (!key) return false;
     const result = await AsyncStorage.getItem(key);
@@ -12,7 +12,7 @@ const getFromAsync = async key => {
   }
 };
 
-const putInAsync = async (key, value) => {
+const putInCache = async (key, value) => {
   if (!(key && value)) return false;
   try {
     await AsyncStorage.setItem(key, JSON.stringify(value));
@@ -23,7 +23,7 @@ const putInAsync = async (key, value) => {
   }
 };
 
-const changeInAsync = async (key, obj, newValue) => {
+const changeInCache = async (key, obj, newValue) => {
   if (key && obj && newValue) return false;
   try {
     let change = {...obj, ...newValue};
@@ -35,7 +35,7 @@ const changeInAsync = async (key, obj, newValue) => {
   }
 };
 
-const removeFromAsync = async key => {
+const removeFromCache = async key => {
   try {
     if (!key) return false;
     await AsyncStorage.removeItem(key);
@@ -46,4 +46,4 @@ const removeFromAsync = async key => {
   }
 };
 
-export {getFromAsync, putInAsync, changeInAsync, removeFromAsync};
+export {getFromCache, putInCache, changeInCache, removeFromCache};

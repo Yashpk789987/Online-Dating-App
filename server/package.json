@@ -6,10 +6,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "forever app.js"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.4",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "forever": "^2.0.0",

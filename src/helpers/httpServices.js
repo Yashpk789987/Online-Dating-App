@@ -1,5 +1,5 @@
 import baseurl from './baseurl';
-import {getFromAsync, removeFromAsync} from './cacheTools';
+import {getFromCache, removeFromCache} from './cacheTools';
 
 console.log('BaseURL', baseurl);
 
@@ -22,8 +22,8 @@ const getData = async url => {
     console.log('result.status', result);
     if (result && result.status == 401) {
       alert('Please restart app again');
-      await removeFromAsync('store');
-      await removeFromAsync('token');
+      await removeFromCache('store');
+      await removeFromCache('token');
       return null;
     } else {
       return result;
@@ -36,7 +36,7 @@ const getData = async url => {
 const postData = async (url, body) => {
   console.log(url, body);
   try {
-    const token = await getFromAsync('token');
+    const token = await getFromCache('token');
     console.log('token', token);
     const response = await fetch(`${BaseURL}/${url}`, {
       method: 'POST',
@@ -55,14 +55,14 @@ const postData = async (url, body) => {
 };
 
 const postDataWithoutToken = async (url, body) => {
-  console.log('Url', url);
+  console.log('Url', `${baseurl}/${url}`);
   console.log('Body', body);
   try {
     const response = await fetch(`${baseurl}/${url}`, {
       method: 'POST',
-      mode: 'cors',
       headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
@@ -70,6 +70,7 @@ const postDataWithoutToken = async (url, body) => {
     return result;
   } catch (e) {
     console.log(url, e);
+    return result;
   }
 };
 
