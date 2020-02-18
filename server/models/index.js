@@ -9,6 +9,7 @@ const sequelize = new Sequelize('online-dating', 'root', '', {
 
 const models = {
   User: sequelize.import('./user'),
+  Photo: sequelize.import('./photo'),
 };
 
 Object.keys(models).forEach(modelName => {

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {ImageBackground, StatusBar, Text, View} from 'react-native';
-import {Container, Header, Content, Item, Input, Button, DatePicker, Icon} from 'native-base';
+import {Container, Header, Content, Item, Input, Button, DatePicker, Icon, Spinner} from 'native-base';
 import {postDataWithoutToken} from '../helpers/httpServices';
+import {putInCache} from '../helpers/cacheTools';
 
 const initialState = {
   username: '',
@@ -26,10 +27,12 @@ export default function SignUp(props) {
     let data = {username, email, password, passwordConfirmation, dob, phone};
 
     let result = await postDataWithoutToken(`user/create`, data);
-
     if (result.ok) {
-      //props.navigation.navigate('Home');
+      let cacheResult = await putInCache('token', result.token);
+      setState(prevState => ({...prevState, uploading: false}));
+      props.navigation.navigate('Home');
     } else {
+      setState(prevState => ({...prevState, uploading: false}));
       setErrors(result.errors);
     }
   }
@@ -143,13 +146,17 @@ export default function SignUp(props) {
       </Content>
       <Button
         block
+        disabled={uploading}
         onPress={() => doSignUp()}
-        style={{backgroundColor: 'orange', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+        style={{
+          backgroundColor: 'orange',
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+        }}>
         {uploading ? (
-          <>
-            <Text style={{color: 'white', fontSize: 20}}>SignUp</Text>
-            <Spinner color="white" />
-          </>
+          [<Text style={{color: 'white', fontSize: 20}}>Signing up ...</Text>, <Spinner color="white" />]
         ) : (
           <Text style={{color: 'white', fontSize: 20}}>SignUp</Text>
         )}

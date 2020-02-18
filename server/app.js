@@ -52,6 +52,7 @@
 //   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
 // });
 
+var jwt = require('jsonwebtoken');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 
