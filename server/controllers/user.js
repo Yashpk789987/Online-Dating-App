@@ -5,7 +5,10 @@ const bcrypt = require('bcryptjs');
 
 exports.create = async function(req, res) {
   try {
-    const user = await models.User.create(req.body);
+    const user = await models.User.create({
+      ...req.body,
+      location: {type: 'Point', coordinates: [req.body.latitude, req.body.longitude]},
+    });
     var token = await jwt.sign(user.dataValues, 'Reactnative@2018', {expiresIn: '30d'});
     res.json({ok: true, token: token});
   } catch (error) {

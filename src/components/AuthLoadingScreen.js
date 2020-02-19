@@ -9,7 +9,9 @@ export default class AuthLoadingScreen extends React.Component {
 
   _bootstrapAsync = async () => {
     const token = JSON.parse(await AsyncStorage.getItem('token'));
-    let res = await fetch(`https://video-chat-pk2128.herokuapp.com/connect`);
+    // console.log('Started');
+    // let res = await fetch(`https://video-chat-pk2128.herokuapp.com/connect`);
+    // console.log('Eneded');
     this.props.navigation.navigate(token ? 'App' : 'Auth', token);
   };
 

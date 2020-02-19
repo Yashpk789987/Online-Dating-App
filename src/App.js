@@ -19,6 +19,7 @@ import VideoChatPack from './VideoChatPack';
 
 import Main from './components/Main';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
+import {PermissionsAndroid} from 'react-native';
 
 console.disableYellowBox = true;
 
@@ -37,6 +38,20 @@ const AppContainer = createAppContainer(
 );
 
 export default class App extends React.Component {
+  askPermissions = async () => {
+    let response = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+    ]);
+
+    if (Object.values(response).some(item => item === 'denied')) {
+      askPermissions();
+    } else {
+    }
+  };
+  componentDidMount() {
+    this.askPermissions();
+  }
   render() {
     return (
       <StyleProvider style={getTheme()}>

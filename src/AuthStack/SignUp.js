@@ -4,6 +4,7 @@ import {ImageBackground, StatusBar, Text, View} from 'react-native';
 import {Container, Header, Content, Item, Input, Button, DatePicker, Icon, Spinner} from 'native-base';
 import {postDataWithoutToken} from '../helpers/httpServices';
 import {putInCache} from '../helpers/cacheTools';
+import Geolocation from '@react-native-community/geolocation';
 
 const initialState = {
   username: '',
@@ -12,19 +13,31 @@ const initialState = {
   email: '',
   password: '',
   passwordConfirmation: '',
+  latitude: '',
+  longitude: '',
   uploading: false,
 };
 
 export default function SignUp(props) {
-  const [{username, email, password, passwordConfirmation, dob, phone, uploading}, setState] = useState(initialState);
+  const [
+    {username, email, password, passwordConfirmation, dob, phone, uploading, latitude, longitude},
+    setState,
+  ] = useState(initialState);
   const [errors, setErrors] = useState([]);
   const clearState = () => {
     setState({...initialState});
   };
 
+  useEffect(() => {
+    Geolocation.getCurrentPosition(async info => {
+      let {latitude, longitude} = info.coords;
+      await setState(prevState => ({...prevState, latitude: latitude, longitude: longitude}));
+    });
+  }, []);
+
   async function doSignUp() {
     setState(prevState => ({...prevState, uploading: true}));
-    let data = {username, email, password, passwordConfirmation, dob, phone};
+    let data = {username, email, password, passwordConfirmation, dob, phone, latitude, longitude};
 
     let result = await postDataWithoutToken(`user/create`, data);
     if (result.ok) {

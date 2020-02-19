@@ -10,7 +10,7 @@ const Login = function({values, touched, errors, handleChange, handleBlur, handl
   useEffect(() => {});
   let [usernameError, setUsernameError] = useState('');
   let [passwordError, setPasswordError] = useState('');
-
+  console.log('Errors', errors);
   return (
     <ImageBackground
       style={{

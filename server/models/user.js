@@ -61,6 +61,13 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      location: {
+        type: DataTypes.GEOMETRY('POINT'),
+        notEmpty: {
+          args: true,
+          msg: `Location Cannot be null`,
+        },
+      },
     },
     {
       hooks: {
