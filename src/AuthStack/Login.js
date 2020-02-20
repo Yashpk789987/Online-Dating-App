@@ -1,16 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {ImageBackground, StatusBar, Text, View} from 'react-native';
-import {Container, Header, Content, Item, Input, Button, Spinner} from 'native-base';
+import {Container, Header, Content, Item, Input, Button, Spinner, Icon} from 'native-base';
 
 import {withFormik} from 'formik';
 import {postDataWithoutToken} from '../helpers/httpServices';
 import {putInCache} from '../helpers/cacheTools';
 
-const Login = function({values, touched, errors, handleChange, handleBlur, handleSubmit, isSubmitting}) {
-  useEffect(() => {});
-  let [usernameError, setUsernameError] = useState('');
-  let [passwordError, setPasswordError] = useState('');
-  console.log('Errors', errors);
+const Login = function({values, touched, handleChange, handleBlur, handleSubmit, isSubmitting, errors}) {
   return (
     <ImageBackground
       style={{
@@ -27,7 +23,11 @@ const Login = function({values, touched, errors, handleChange, handleBlur, handl
       </View>
 
       <Content style={{flex: 1}}>
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Item
+          error={errors.path && errors.path === 'user' ? true : false}
+          success={errors.path && errors.path === 'user' ? false : true}
+          rounded
+          style={{marginBottom: '1%', marginTop: '5%'}}>
           <Input
             placeholder="Username  Or  Mobile No. Or  Email Id"
             placeholderTextColor={'white'}
@@ -35,9 +35,16 @@ const Login = function({values, touched, errors, handleChange, handleBlur, handl
             style={{color: 'white'}}
             onChangeText={handleChange('email_mobile_username')}
           />
+          {errors.path && errors.path === 'user' ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
-
-        <Item rounded style={{marginBottom: '10%'}}>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>
+          {errors.path && errors.path === 'user' ? errors.msg : ''}
+        </Text>
+        <Item
+          error={errors.path && errors.path === 'password' ? true : false}
+          success={errors.path && errors.path === 'password' ? false : true}
+          rounded
+          style={{marginBottom: '1%', marginTop: '5%'}}>
           <Input
             secureTextEntry={true}
             placeholderTextColor={'white'}
@@ -46,32 +53,37 @@ const Login = function({values, touched, errors, handleChange, handleBlur, handl
             onBlur={handleBlur('password')}
             onChangeText={handleChange('password')}
           />
+          {errors.path && errors.path === 'password' ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
         </Item>
+        <Text style={{paddingLeft: '5%', color: 'white'}}>
+          {errors.path && errors.path === 'password' ? errors.msg : ''}
+        </Text>
+        <Button
+          block
+          disabled={isSubmitting}
+          onPress={handleSubmit}
+          style={{
+            marginTop: '5%',
+            backgroundColor: 'orange',
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}>
+          {isSubmitting ? (
+            [<Text style={{color: 'white', fontSize: 20}}>Logging In ...</Text>, <Spinner color="white" />]
+          ) : (
+            <Text style={{color: 'white', fontSize: 20}}>Login</Text>
+          )}
+        </Button>
       </Content>
-      <Button
-        block
-        disabled={isSubmitting}
-        onPress={handleSubmit}
-        style={{
-          backgroundColor: 'orange',
-          width: '100%',
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-        }}>
-        {isSubmitting ? (
-          [<Text style={{color: 'white', fontSize: 20}}>Logging In ...</Text>, <Spinner color="white" />]
-        ) : (
-          <Text style={{color: 'white', fontSize: 20}}>Login</Text>
-        )}
-      </Button>
     </ImageBackground>
   );
 };
 
 export default withFormik({
   mapPropsToValues: () => ({email_mobile_username: '', password: ''}),
-  handleSubmit: async (values, {props: {navigation}, setSubmitting}) => {
+  handleSubmit: async (values, {props: {navigation}, setSubmitting, setErrors}) => {
     let result = await postDataWithoutToken(`user/login`, values);
     if (result.ok) {
       let cacheResult = await putInCache('token', result.token);
@@ -81,7 +93,7 @@ export default withFormik({
     } else {
       ///// show Errors
       setSubmitting(false);
-      alert(result.error.msg);
+      setErrors(result.error);
     }
   },
 })(Login);

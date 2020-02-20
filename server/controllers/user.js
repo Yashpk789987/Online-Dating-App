@@ -26,7 +26,6 @@ exports.login = async function(req, res) {
       res.json({ok: false, error: {path: 'user', msg: 'User Do Not Exist'}});
     } else {
       if (bcrypt.compareSync(password, user.password)) {
-        const user = await models.User.create(req.body);
         var token = await jwt.sign(user.dataValues, 'Reactnative@2018', {expiresIn: '30d'});
         res.json({ok: true, token: token});
       } else {

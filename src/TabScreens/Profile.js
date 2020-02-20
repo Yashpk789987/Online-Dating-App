@@ -1,6 +1,10 @@
 import React from 'react';
 import {Text, Image, TouchableOpacity, Dimensions, View} from 'react-native';
-
+import {getFromCache} from '../helpers/cacheTools';
+import decode from 'jwt-decode';
+import moment from 'moment';
+import {getDataFromToken} from '../helpers/tokenutils';
+import {getAddressFromLatAndLong} from '../helpers/locationutils';
 import {
   Container,
   Header,
@@ -34,10 +38,46 @@ var images = [
 export default class Profile extends React.Component {
   state = {
     activeIndex: 1,
+    loading: false,
+    username: '',
+    age: 0,
+    address: '',
+  };
+
+  getAndSetAge = userdata => {
+    var years = moment().diff(userdata.dob, 'years', false);
+    this.setState({age: years});
+  };
+
+  getAndSetAddress = async data => {
+    const {
+      location: {coordinates},
+    } = data;
+    let result = await getAddressFromLatAndLong({latitude: coordinates[0], longitude: coordinates[1]});
+    console.log(result);
+    if (result.ok) {
+      this.setState({address: result.address});
+    } else {
+      ///// Handle Result.ok false
+    }
+  };
+
+  componentDidMount = async () => {
+    this.setState({loading: true});
+    const result = await getDataFromToken();
+    const {ok, data} = result;
+    if (ok) {
+      await this.setState({username: data.username, loading: false});
+      this.getAndSetAge(data);
+      this.getAndSetAddress(data);
+    } else {
+      ///// Handle Error Code To Be Write ....
+    }
   };
   render() {
     const height = Dimensions.get('screen').height;
     const width = Dimensions.get('screen').width;
+    const {age, username, address} = this.state;
     return (
       <Container>
         <Header>
@@ -77,8 +117,12 @@ export default class Profile extends React.Component {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>Shinel Jhones, 26</Text>
-              <Text note>San Francisco</Text>
+              <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>
+                {username}
+                {' , '}
+                {age}
+              </Text>
+              <Text note>{address}</Text>
             </CardItem>
             <View
               style={{

@@ -55,8 +55,6 @@ const postData = async (url, body) => {
 };
 
 const postDataWithoutToken = async (url, body) => {
-  console.log('Url', `${baseurl}/${url}`);
-  console.log('Body', body);
   try {
     const response = await fetch(`${baseurl}/${url}`, {
       method: 'POST',
