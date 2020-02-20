@@ -5,6 +5,9 @@ import decode from 'jwt-decode';
 import moment from 'moment';
 import {getDataFromToken} from '../helpers/tokenutils';
 import {getAddressFromLatAndLong} from '../helpers/locationutils';
+import {openImagePicker} from '../helpers/imageutils';
+import {uploadImage} from '../helpers/httpServices';
+import baseurl from '../helpers/baseurl';
 import {
   Container,
   Header,
@@ -39,9 +42,10 @@ export default class Profile extends React.Component {
   state = {
     activeIndex: 1,
     loading: false,
-    username: '',
-    age: 0,
-    address: '',
+    username: 'Loading...',
+    age: 'Loading...',
+    address: 'Loading...',
+    profile_pic_uri: '',
   };
 
   getAndSetAge = userdata => {
@@ -54,11 +58,23 @@ export default class Profile extends React.Component {
       location: {coordinates},
     } = data;
     let result = await getAddressFromLatAndLong({latitude: coordinates[0], longitude: coordinates[1]});
-    console.log(result);
     if (result.ok) {
       this.setState({address: result.address});
     } else {
       ///// Handle Result.ok false
+    }
+  };
+
+  openImagePicker = async () => {
+    try {
+      let res = await openImagePicker('Select Profile Pic', 'images');
+      this.setState({profile_pic_uri: res.uri});
+      let result = await uploadImage('user/upload-image', {pic: {uri: res.uri, type: 'image/jpeg'}, is_profile: true});
+      if (result.ok) {
+        this.setState({profile_pic_uri: `${baseurl}/user_images/${result.photo.name}`});
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -77,7 +93,7 @@ export default class Profile extends React.Component {
   render() {
     const height = Dimensions.get('screen').height;
     const width = Dimensions.get('screen').width;
-    const {age, username, address} = this.state;
+    const {age, username, address, profile_pic_uri} = this.state;
     return (
       <Container>
         <Header>
@@ -97,18 +113,20 @@ export default class Profile extends React.Component {
         </Header>
         <Content>
           <Card style={{height: height * 0.5}}>
-            <CardItem
-              cardBody
-              style={{
-                height: height * 0.27,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Image
-                style={{height: height * 0.25, width: '60%', borderRadius: 20}}
-                source={require('../../images/g5.jpg')}
-              />
-            </CardItem>
+            <TouchableOpacity onPress={this.openImagePicker}>
+              <CardItem
+                cardBody
+                style={{
+                  height: height * 0.27,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  style={{height: height * 0.25, width: '60%', borderRadius: 20}}
+                  source={profile_pic_uri === '' ? require('../../images/g5.jpg') : {uri: profile_pic_uri}}
+                />
+              </CardItem>
+            </TouchableOpacity>
             <CardItem
               style={{
                 height: height * 0.06,

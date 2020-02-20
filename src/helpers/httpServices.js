@@ -1,7 +1,6 @@
 import baseurl from './baseurl';
 import {getFromCache, removeFromCache} from './cacheTools';
-
-console.log('BaseURL', baseurl);
+import {getDataFromToken} from './tokenutils';
 
 const getData = async url => {
   console.log(url);
@@ -54,6 +53,38 @@ const postData = async (url, body) => {
   }
 };
 
+const uploadImage = async (url, body) => {
+  console.log(`${baseurl}/${url}`, body, 'body');
+  try {
+    var photo = {
+      uri: body.pic.uri,
+      type: body.pic.type,
+      name: 'profile_pic',
+    };
+
+    const token = await getFromCache('token');
+    var form = new FormData();
+    form.append('profile_pic', photo);
+    const result2 = await getDataFromToken();
+    const {ok, data} = result2;
+    if (ok) {
+      form.append('userId', data.id);
+    }
+    const response = await fetch(`${baseurl}/${url}`, {
+      method: 'POST',
+      headers: {
+        auth: token,
+      },
+      body: form,
+    });
+    const result = await response.json();
+    console.log(result);
+    return result;
+  } catch (e) {
+    console.log(url, e);
+  }
+};
+
 const postDataWithoutToken = async (url, body) => {
   try {
     const response = await fetch(`${baseurl}/${url}`, {
@@ -72,4 +103,4 @@ const postDataWithoutToken = async (url, body) => {
   }
 };
 
-export {getData, postData, postDataWithoutToken};
+export {getData, postData, postDataWithoutToken, uploadImage};

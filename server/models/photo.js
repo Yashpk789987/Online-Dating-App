@@ -2,12 +2,10 @@ module.exports = (sequelize, DataTypes) => {
   const Photo = sequelize.define('photo', {
     name: {
       type: DataTypes.STRING,
-      validate: {
-        nonEmpty: {
-          args: true,
-          msg: 'The Image Cannot be empty',
-        },
-      },
+    },
+    is_profile: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   });
 

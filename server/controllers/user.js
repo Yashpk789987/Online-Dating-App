@@ -37,3 +37,13 @@ exports.login = async function(req, res) {
     res.json({ok: false, error: {path: 'unknown', msg: 'There Is Some Techincal Issue'}});
   }
 };
+
+exports.upload_image = async function(req, res) {
+  try {
+    let photo = await models.Photo.create({...req.body, name: req.file.filename});
+    res.json({ok: true, photo});
+  } catch (error) {
+    console.log(error);
+    res.json({ok: false, error});
+  }
+};
