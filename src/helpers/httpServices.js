@@ -67,7 +67,6 @@ const uploadImage = async (url, body, uploadProgress = e => {}) => {
     }
     const result = await axios.post(`${baseurl}/${url}`, form, {
       onUploadProgress: e => {
-        console.log(e);
         uploadProgress(e);
       },
       headers: {

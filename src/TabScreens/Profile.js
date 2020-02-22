@@ -79,9 +79,13 @@ export default class Profile extends React.Component {
   loadImages = async () => {
     let result = await getData(`user/all-images/${this.state.userId}`);
     if (result.ok) {
-      this.setState({photos: result.photos});
-      let photo = result.photos.filter(item => item.is_profile);
-      this.setState({profile_pic_uri: `${baseurl}/user_images/${photo[0].name}`});
+      if (result.photos.length === 0) {
+        this.setState(state => ({profile_pic_uri: state.profile_pic_uri_placeholder}));
+      } else {
+        this.setState({photos: result.photos});
+        let photo = result.photos.filter(item => item.is_profile);
+        this.setState({profile_pic_uri: `${baseurl}/user_images/${photo[0].name}`});
+      }
     } else {
     }
   };
@@ -272,27 +276,6 @@ export default class Profile extends React.Component {
                   </View>
                 );
               })}
-              {/* {images.map((image, index) => {
-                return (
-                  <View
-                    key={index}
-                    style={[
-                      {width: width / 3},
-                      {height: width / 3},
-                      {marginBottom: 0, marginTop: 4},
-                      index % 3 !== 0 ? {paddingLeft: 4} : {paddingLeft: 3},
-                    ]}>
-                    <Image
-                      style={{
-                        flex: 1,
-                        alignSelf: 'stretch',
-                        width: undefined,
-                        height: undefined,
-                      }}
-                      source={image}></Image>
-                  </View>
-                );
-              })} */}
             </View>
           </View>
         </Content>
