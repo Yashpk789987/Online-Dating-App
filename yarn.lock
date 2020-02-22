@@ -4804,6 +4804,13 @@ react-native-image-picker@^2.3.0:
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-2.3.0.tgz#cd8941261c03df999e8abcd4ad1ce99785cfef44"
   integrity sha512-6B4OBkBjyyYs+LGJWAe+6bzfBHB4Np/rbdIPgN/WpK8sGNJ1FiabZ9GCH4TI71Nlg+xncKCgDL1P9InMoXBd1w==
 
+react-native-image-placeholder@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/react-native-image-placeholder/-/react-native-image-placeholder-1.0.14.tgz#74f8a74f0d9f2732cc55bc65eb9d6adb668c7c1d"
+  integrity sha512-t7A/qb9hW7PoaeY+S65S92l4W4p+pnWI3zPCtOVKgLm6r3fDENNY2UOdI9wl7Mngb32Ql/NXzGdmZ/DBXK2DGg==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-incall-manager@^3.2.7:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.2.7.tgz#3a6f34bd4bb89ed4f0bcaa2ffc571e9b2f0c479b"

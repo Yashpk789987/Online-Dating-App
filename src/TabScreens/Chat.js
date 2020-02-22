@@ -20,131 +20,23 @@ import {
 } from 'native-base';
 import {RTCPeerConnection, RTCSessionDescription, RTCView, mediaDevices} from 'react-native-webrtc';
 
-export default class App extends React.Component {
+export default class Chat extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       users: [],
-      answersFrom: {},
-      localVideo: false,
-      remoteVideo: false,
-      localStream: '',
-      remoteStream: '',
-      targetSocketId: '',
     };
   }
 
-  startLocalStream = async () => {
-    try {
-      const isFront = true;
-      const devices = await mediaDevices.enumerateDevices();
-      const facing = isFront ? 'front' : 'back';
-      const videoSourceId = devices.find(device => device.kind === 'videoinput' && device.facing === facing);
-      const facingMode = isFront ? 'user' : 'environment';
-      const constraints = {
-        audio: true,
-        video: {
-          mandatory: {
-            minWidth: 500,
-            minHeight: 300,
-            minFrameRate: 30,
-          },
-          facingMode,
-          optional: videoSourceId ? [{sourceId: videoSourceId}] : [],
-        },
-      };
-      const newStream = await mediaDevices.getUserMedia(constraints);
-      await this.pc.addStream(newStream);
-      this.setState({localStream: newStream, localVideo: true});
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // componentDidMount() {
+  //   this.socket = this.props.screenProps.socketRef;
+  // }
 
-  componentDidMount() {
-    this.socket = this.props.screenProps.socketRef;
-    const configuration = {iceServers: [{url: 'stun:stun.l.google.com:19302'}]};
-    this.pc = new RTCPeerConnection(configuration);
-
-    this.socket.on('offer-made', async data => {
-      try {
-        let offer = data.offer;
-        await this.pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-        let answer = await this.pc.createAnswer();
-        await this.pc.setLocalDescription(new RTCSessionDescription(answer));
-        this.socket.emit('make-answer', {
-          answer: answer,
-          to: data.socket,
-        });
-      } catch (error) {
-        console.log(error);
-      }
+  openChat = item => {
+    this.props.screenProps.stackRef.navigate('ChatInterface', {
+      user: item,
+      socketRef: this.props.screenProps.socketRef,
     });
-
-    this.socket.on(
-      'answer-made',
-      async function(data) {
-        try {
-          await this.pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-          if (!this.state.answersFrom[data.socket]) {
-            this.createOffer(data.socket);
-            this.state.answersFrom[data.socket] = true;
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }.bind(this),
-    );
-
-    this.socket.on(
-      'do-disconnect',
-      function(data) {
-        console.log('I am receiving disconect', this.state.username);
-        if (this.remoteVideo === true) {
-          this.setState({remoteVideo: false, localVideo: false, remoteStream: '', localStream: ''});
-          this.pc.close();
-          this.setState({targetSocketId: ''});
-        }
-      }.bind(this),
-    );
-
-    this.pc.onaddstream = e => {
-      InCallManager.start({media: 'video'});
-      InCallManager.setSpeakerphoneOn(true);
-      this.setState({remoteStream: e.stream, remoteVideo: true});
-    };
-
-    this.startLocalStream();
-  }
-
-  createOffer = async id => {
-    try {
-      this.setState({targetSocketId: id});
-      const offer = await this.pc.createOffer();
-      await this.pc.setLocalDescription(new RTCSessionDescription(offer));
-      this.socket.emit('make-offer', {
-        offer: offer,
-        to: id,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  onDestroyCall = () => {
-    try {
-      this.setState({remoteVideo: false, localVideo: false, remoteStream: '', localStream: ''});
-      this.pc.close();
-      InCallManager.stop();
-      ////// EMIT SOCKET FOR DISCONNECTING CALL  ///////
-      this.socket.emit('disconnect-call', {
-        to: this.state.targetSocketId,
-      });
-      /////  EMIT SOCKET FOR DISCONNECTING CALL  ///////
-      this.setState({targetSocketId: ''});
-    } catch (error) {
-      console.log('ERROR DESTROY CALL', error);
-    }
   };
 
   render() {
@@ -164,8 +56,8 @@ export default class App extends React.Component {
         </Header>
         <Content style={{height: '0%'}}>
           <Text style={{color: 'white', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>Online Users</Text>
-          {this.state.remoteVideo ? (
-            <></>
+          {this.props.screenProps.users.length === 0 ? (
+            <Text style={{marginLeft: '25%', color: 'white', fontSize: 20}}>No Users Online ...</Text>
           ) : (
             <List>
               {this.props.screenProps.users.map((item, index) => {
@@ -180,8 +72,8 @@ export default class App extends React.Component {
                     </Body>
 
                     <Right>
-                      <TouchableOpacity onPress={() => this.createOffer(item.socket_id)}>
-                        <Icon name="videocam" />
+                      <TouchableOpacity onPress={() => this.openChat(item)}>
+                        <Icon name="arrow-round-forward" />
                       </TouchableOpacity>
                     </Right>
                   </ListItem>
@@ -190,49 +82,6 @@ export default class App extends React.Component {
             </List>
           )}
         </Content>
-        {this.state.localVideo ? (
-          <RTCView
-            objectFit="cover"
-            style={{
-              height: this.state.remoteVideo ? '100%' : '0%',
-              opacity: this.state.remoteVideo ? 1 : 0,
-              marginBottom: 50,
-              width: '100%',
-            }}
-            streamURL={this.state.remoteVideo ? this.state.remoteStream.toURL() : this.state.localStream.toURL()}
-          />
-        ) : (
-          <></>
-        )}
-        {this.state.localVideo ? (
-          <RTCView
-            style={{
-              marginLeft: '28%',
-              position: 'absolute',
-              bottom: 50,
-              zIndex: 9999,
-              height: this.state.remoteVideo ? '25%' : '0%',
-              width: '100%',
-            }}
-            streamURL={this.state.localStream.toURL()}
-          />
-        ) : (
-          <></>
-        )}
-        <Button
-          onPress={() => this.onDestroyCall()}
-          style={{
-            width: '100%',
-            position: 'absolute',
-            flex: 0.05,
-            height: 50,
-            bottom: 0,
-            opacity: this.state.remoteVideo ? 1 : 0,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>Disconnect Call </Text>
-        </Button>
       </Container>
     );
   }

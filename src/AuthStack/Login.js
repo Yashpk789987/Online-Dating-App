@@ -87,8 +87,7 @@ export default withFormik({
     let result = await postDataWithoutToken(`user/login`, values);
     if (result.ok) {
       let cacheResult = await putInCache('token', result.token);
-      setSubmitting(false);
-      navigation.navigate('Home');
+      navigation.navigate('App');
       setSubmitting(false);
     } else {
       ///// show Errors

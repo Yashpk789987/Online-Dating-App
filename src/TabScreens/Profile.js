@@ -1,13 +1,15 @@
 import React from 'react';
-import {Text, Image, TouchableOpacity, Dimensions, View} from 'react-native';
+import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid} from 'react-native';
 import {getFromCache} from '../helpers/cacheTools';
 import decode from 'jwt-decode';
 import moment from 'moment';
 import {getDataFromToken} from '../helpers/tokenutils';
 import {getAddressFromLatAndLong} from '../helpers/locationutils';
 import {openImagePicker} from '../helpers/imageutils';
-import {uploadImage} from '../helpers/httpServices';
+import {uploadImage, getData} from '../helpers/httpServices';
 import baseurl from '../helpers/baseurl';
+import ImageLoad from 'react-native-image-placeholder';
+
 import {
   Container,
   Header,
@@ -42,10 +44,15 @@ export default class Profile extends React.Component {
   state = {
     activeIndex: 1,
     loading: false,
+    userId: -1,
     username: 'Loading...',
     age: 'Loading...',
     address: 'Loading...',
     profile_pic_uri: '',
+    profile_pic_uri_placeholder:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSfbXfGdccYWDfV83TGwNkVUv80gOfKsXQjnfAw3FYiVMD7X4kn',
+    photos: [],
+    upload_fraction: 0,
   };
 
   getAndSetAge = userdata => {
@@ -65,13 +72,34 @@ export default class Profile extends React.Component {
     }
   };
 
+  uploadProgress = e => {
+    this.setState({upload_fraction: parseFloat(e.loaded / e.total)});
+  };
+
+  loadImages = async () => {
+    let result = await getData(`user/all-images/${this.state.userId}`);
+    if (result.ok) {
+      this.setState({photos: result.photos});
+      let photo = result.photos.filter(item => item.is_profile);
+      this.setState({profile_pic_uri: `${baseurl}/user_images/${photo[0].name}`});
+    } else {
+    }
+  };
+
   openImagePicker = async () => {
     try {
       let res = await openImagePicker('Select Profile Pic', 'images');
-      this.setState({profile_pic_uri: res.uri});
-      let result = await uploadImage('user/upload-image', {pic: {uri: res.uri, type: 'image/jpeg'}, is_profile: true});
+      this.setState(state => ({profile_pic_uri: '', loading: true}));
+
+      let result = await uploadImage(
+        'user/upload-image',
+        {pic: {uri: res.uri, type: 'image/jpeg'}, is_profile: true},
+        this.uploadProgress,
+      );
+
       if (result.ok) {
-        this.setState({profile_pic_uri: `${baseurl}/user_images/${result.photo.name}`});
+        console.log(result, 'upload Image ');
+        this.setState({profile_pic_uri: `${baseurl}/user_images/${result.photo.name}`, loading: false});
       }
     } catch (error) {
       console.log(error);
@@ -83,11 +111,13 @@ export default class Profile extends React.Component {
     const result = await getDataFromToken();
     const {ok, data} = result;
     if (ok) {
-      await this.setState({username: data.username, loading: false});
+      await this.setState({username: data.username, userId: data.id, loading: false});
       this.getAndSetAge(data);
       this.getAndSetAddress(data);
+      this.loadImages();
     } else {
-      ///// Handle Error Code To Be Write ....
+      ///// Move To Home
+      this.props.screenProps.authRef.navigate('AuthLoading');
     }
   };
   render() {
@@ -103,7 +133,7 @@ export default class Profile extends React.Component {
             </TouchableOpacity>
           </Left>
           <Body>
-            <Text style={{color: 'white', fontSize: 20, width: '120%', fontWeight: 'bold'}}>Shinel_Jhones26</Text>
+            <Text style={{color: 'white', fontSize: 20, width: '120%', fontWeight: 'bold'}}>{username}</Text>
           </Body>
           <Right>
             <TouchableOpacity onPress={() => alert('Menu Opened')}>
@@ -112,7 +142,10 @@ export default class Profile extends React.Component {
           </Right>
         </Header>
         <Content>
-          <Card style={{height: height * 0.5}}>
+          <Card
+            style={{
+              height: this.state.upload_fraction > 0 && this.state.upload_fraction < 1 ? height * 0.55 : height * 0.5,
+            }}>
             <TouchableOpacity onPress={this.openImagePicker}>
               <CardItem
                 cardBody
@@ -121,12 +154,32 @@ export default class Profile extends React.Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Image
-                  style={{height: height * 0.25, width: '60%', borderRadius: 20}}
-                  source={profile_pic_uri === '' ? require('../../images/g5.jpg') : {uri: profile_pic_uri}}
-                />
+                {this.state.profile_pic_uri === '' ? (
+                  <Text>Loading ....</Text>
+                ) : (
+                  <ImageLoad
+                    style={{height: height * 0.25, width: '60%', borderRadius: 20}}
+                    isShowActivity={false}
+                    loadingStyle={{size: 'large', color: 'blue'}}
+                    source={{uri: profile_pic_uri}}
+                  />
+                )}
               </CardItem>
             </TouchableOpacity>
+            {this.state.upload_fraction === 0 || this.state.upload_fraction === 1 ? null : (
+              <>
+                <ProgressBarAndroid
+                  styleAttr="Horizontal"
+                  style={{marginLeft: '10%', marginRight: '10%'}}
+                  indeterminate={false}
+                  color="#2196F3"
+                  progress={this.state.upload_fraction}
+                />
+                <Text style={{marginLeft: '40%', marginRight: '10%'}}>
+                  Uploading {`${parseInt(this.state.upload_fraction * 100)} %`}{' '}
+                </Text>
+              </>
+            )}
             <CardItem
               style={{
                 height: height * 0.06,
@@ -197,7 +250,29 @@ export default class Profile extends React.Component {
               </Button>
             </View>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', backgroundColor: 'white'}}>
-              {images.map((image, index) => {
+              {this.state.photos.map((image, index) => {
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      {width: width / 3},
+                      {height: width / 3},
+                      {marginBottom: 0, marginTop: 4},
+                      index % 3 !== 0 ? {paddingLeft: 4} : {paddingLeft: 3},
+                    ]}>
+                    <ImageLoad
+                      style={{
+                        flex: 1,
+                        alignSelf: 'stretch',
+                        width: undefined,
+                        height: undefined,
+                      }}
+                      source={{uri: `${baseurl}/user_images/${image.name}`}}
+                    />
+                  </View>
+                );
+              })}
+              {/* {images.map((image, index) => {
                 return (
                   <View
                     key={index}
@@ -217,7 +292,7 @@ export default class Profile extends React.Component {
                       source={image}></Image>
                   </View>
                 );
-              })}
+              })} */}
             </View>
           </View>
         </Content>

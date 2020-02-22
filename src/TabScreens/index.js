@@ -3,14 +3,18 @@ import {Header, Thumbnail, Body, Container, Icon, Input, Item, Right} from 'nati
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
 import Home from './Home';
+import VideoChat from './VideoChat';
 import Chat from './Chat';
 import Deck from './Deck';
 import NearbyLocations from './NearbyLocations';
-import Chat2 from '../components/Chat2';
+
 import Profile from './Profile';
 import io from 'socket.io-client';
 import InCallManager from 'react-native-incall-manager';
 import RNCallKeep from 'react-native-callkeep';
+import {getDataFromToken} from '../helpers/tokenutils';
+import {removeFromCache} from '../helpers/cacheTools';
+import baseurl from '../helpers/baseurl';
 
 const options = {
   android: {
@@ -38,15 +42,15 @@ const TabNavigator = createBottomTabNavigator(
         tabBarIcon: ({tintColor}) => <Icon name="globe" style={{color: tintColor}} size={25} />,
       },
     },
-    Chat: {
-      screen: Chat,
+    VideoChat: {
+      screen: VideoChat,
       navigationOptions: {
         tabBarLabel: <></>,
         tabBarIcon: ({tintColor}) => <Icon name="videocam" style={{color: tintColor}} size={25} />,
       },
     },
-    Add: {
-      screen: Chat2,
+    Chat: {
+      screen: Chat,
       navigationOptions: {
         tabBarLabel: <></>,
         tabBarIcon: ({tintColor}) => <Icon name="chatboxes" style={{color: tintColor}} size={25} />,
@@ -86,6 +90,7 @@ export default class App extends React.Component {
     user_id: '',
     username: '',
     targetUser: {},
+    user: {},
   };
 
   makeCall = async user => {
@@ -98,14 +103,21 @@ export default class App extends React.Component {
     this.setState({users: filteredUsers});
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     RNCallKeep.setup(options);
-    const user_id = this.props.navigation.getParam('_id');
-    const username = this.props.navigation.getParam('username');
-    this.setState({user_id, username});
+    let result = await getDataFromToken();
+    if (result.ok) {
+      const {id, username} = result.data;
+      await this.setState({user_id: id, username, user: result.data});
+    } else {
+      await removeFromCache('token');
+      this.props.screenProps.authRef.navigate('AuthLoading');
+      return;
+    }
+    const {user_id, username, user} = this.state;
     ///////// Connection To IO Server ////////////
-    // this.socket = io('http://192.168.1.10:3000', {query: `user_id=${user_id}&username=${username}`});
-    this.socket = io('https://video-chat-pk2128.herokuapp.com', {query: `user_id=${user_id}&username=${username}`});
+    this.socket = io(baseurl, {query: `user_id=${user_id}&username=${username}&user=${JSON.stringify(user)}`});
+    //this.socket = io('https://video-chat-pk2128.herokuapp.com', {query: `user_id=${user_id}&username=${username}`});
 
     //////// Receiving List of all already connected users on new connection
     this.socket.on(
@@ -130,7 +142,7 @@ export default class App extends React.Component {
         this.addUsers(data.users);
       }.bind(this),
     );
-  }
+  };
 
   render() {
     const data = Object.assign({
@@ -138,6 +150,7 @@ export default class App extends React.Component {
       makeCall: this.makeCall,
       socketRef: this.socket,
       stackRef: this.props.navigation,
+      authRef: this.props.screenProps.authRef,
     });
     return (
       <Container>

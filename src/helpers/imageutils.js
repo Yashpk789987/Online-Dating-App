@@ -14,11 +14,9 @@ const openImagePicker = async (title, path) => {
     try {
       ImagePicker.showImagePicker(options, response => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
-          reject({ok: false, error: 'User cancelled image picker'});
+          reject({ok: false, error: 'No Image Selected'});
         } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-          reject({ok: false, error: 'User cancelled image picker'});
+          reject({ok: false, error: 'Some other problem occured'});
         } else {
           const source = {uri: response.uri};
           uri = response.uri;

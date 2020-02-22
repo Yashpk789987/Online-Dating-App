@@ -43,7 +43,7 @@ export default function SignUp(props) {
     if (result.ok) {
       let cacheResult = await putInCache('token', result.token);
       setState(prevState => ({...prevState, uploading: false}));
-      props.navigation.navigate('Home');
+      props.navigation.navigate('App');
     } else {
       setState(prevState => ({...prevState, uploading: false}));
       setErrors(result.errors);

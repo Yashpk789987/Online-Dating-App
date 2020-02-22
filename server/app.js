@@ -105,11 +105,15 @@ server.listen(process.env.PORT || '3000', function() {
 let socketsArray = [];
 
 io.on('connection', socket => {
+  let info = JSON.parse(socket.handshake.query['user']);
   let user = {
     user_id: socket.handshake.query['user_id'],
     username: socket.handshake.query['username'],
     socket_id: socket.id,
+    info,
   };
+
+  console.log(user);
 
   socket.emit('self-acknowledge', {
     users: socketsArray,
@@ -156,4 +160,17 @@ io.on('connection', socket => {
     });
   });
   /////////   FOR DISCONECTING CALL /////////////////
+
+  ////// FOR REAL TIME CHAT MESSAGING ///////////////
+  socket.on('send-chat-message', function(data) {
+    socket.to(data.user.socket_id).emit('receive-message', {
+      socket: socket.id,
+      message: data.message,
+    });
+  });
+  ////// FOR REAL TIME CHAT MESSAGING ///////////////
 });
+
+// var fs = require('fs');
+// var filePath = __dirname + '/public/user_images/1055cf79d446364be4c6cec8c6eb3790';
+// fs.unlinkSync(filePath);

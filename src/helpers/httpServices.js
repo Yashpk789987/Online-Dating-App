@@ -1,27 +1,22 @@
 import baseurl from './baseurl';
 import {getFromCache, removeFromCache} from './cacheTools';
 import {getDataFromToken} from './tokenutils';
+import axios from 'axios';
 
 const getData = async url => {
-  console.log(url);
   try {
-    const token = await getFromAsync('token');
-    console.log('token', token);
-    const response = await fetch(`${BaseURL}/${url}`, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors', // no-cors, cors, *same-origin
-      // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      // credentials: 'same-origin', // include, *same-origin, omit
+    const token = await getFromCache('token');
+    const response = await fetch(`${baseurl}/${url}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         auth: token,
       },
     });
     const result = await response.json();
-    console.log('result.status', result);
-    if (result && result.status == 401) {
-      alert('Please restart app again');
-      await removeFromCache('store');
+
+    if (result.ok === false && result.code !== undefined && result.code === 'auth_failed') {
+      alert('Session Expired\nPlease Login Again');
       await removeFromCache('token');
       return null;
     } else {
@@ -33,10 +28,8 @@ const getData = async url => {
 };
 
 const postData = async (url, body) => {
-  console.log(url, body);
   try {
     const token = await getFromCache('token');
-    console.log('token', token);
     const response = await fetch(`${BaseURL}/${url}`, {
       method: 'POST',
       mode: 'cors',
@@ -53,33 +46,41 @@ const postData = async (url, body) => {
   }
 };
 
-const uploadImage = async (url, body) => {
-  console.log(`${baseurl}/${url}`, body, 'body');
+const uploadImage = async (url, body, uploadProgress = e => {}) => {
   try {
     var photo = {
       uri: body.pic.uri,
       type: body.pic.type,
-      name: 'profile_pic',
+      name: 'pic',
     };
 
     const token = await getFromCache('token');
     var form = new FormData();
-    form.append('profile_pic', photo);
+    form.append('pic', photo);
+    if (body.is_profile) {
+      form.append('is_profile', body.is_profile);
+    }
     const result2 = await getDataFromToken();
     const {ok, data} = result2;
     if (ok) {
       form.append('userId', data.id);
     }
-    const response = await fetch(`${baseurl}/${url}`, {
-      method: 'POST',
+    const result = await axios.post(`${baseurl}/${url}`, form, {
+      onUploadProgress: e => {
+        console.log(e);
+        uploadProgress(e);
+      },
       headers: {
         auth: token,
       },
-      body: form,
     });
-    const result = await response.json();
-    console.log(result);
-    return result;
+
+    if (result.data.ok === false && result.data.code !== undefined && result.data.code === 'auth_failed') {
+      alert('Session Expired\nPlease Login Again');
+      await removeFromCache('token');
+      return null;
+    }
+    return result.data;
   } catch (e) {
     console.log(url, e);
   }
@@ -96,6 +97,7 @@ const postDataWithoutToken = async (url, body) => {
       body: JSON.stringify(body),
     });
     const result = await response.json();
+
     return result;
   } catch (e) {
     console.log(url, e);
@@ -104,3 +106,14 @@ const postDataWithoutToken = async (url, body) => {
 };
 
 export {getData, postData, postDataWithoutToken, uploadImage};
+
+//  const response = await fetch(`${baseurl}/${url}`, {
+//       method: 'GET', // *GET, POST, PUT, DELETE, etc.
+//       mode: 'cors', // no-cors, cors, *same-origin
+//       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+//       // credentials: 'same-origin', // include, *same-origin, omit
+//       headers: {
+//         'Content-Type': 'application/json',
+//         auth: token,
+//       },
+//     });
