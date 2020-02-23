@@ -26,6 +26,7 @@
     "react-native": "^0.61.5",
     "react-native-callkeep": "^3.0.9",
     "react-native-casino-roulette": "^1.6.0",
+    "react-native-emoji-input": "^1.1.10",
     "react-native-emoji-selector": "^0.1.8",
     "react-native-geocoding": "^0.4.0",
     "react-native-gesture-handler": "^1.5.3",

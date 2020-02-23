@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-native-modal';
 import {View, StyleSheet, TouchableOpacity, TextInput, Keyboard} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
-import EmojiSelector from 'react-native-emoji-selector';
+import EmojiInput from 'react-native-emoji-input';
 import {Icon, Input, Item} from 'native-base';
 import {Header, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 'native-base';
 import {Picker} from 'emoji-mart-native';
@@ -37,19 +37,15 @@ export default class ChatInterface extends React.Component {
     let thisRef = this;
     this.socket.on('receive-message', function(data) {
       const {message} = data;
-      let messagesArray = [
-        ...thisRef.state.messages,
-        {
-          _id: message._id,
-          text: message.text,
-          createdAt: message.createdAt,
+      thisRef.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, {
+          ...message,
           user: {
             _id: message.user._id,
             name: username,
           },
-        },
-      ];
-      thisRef.setState({messages: messagesArray.reverse()});
+        }),
+      }));
     });
   };
 
@@ -70,17 +66,15 @@ export default class ChatInterface extends React.Component {
   };
 
   sendGif = async url => {
-    let message = [
-      {
-        _id: 2,
-        text: '',
-        createdAt: new Date(),
-        image: url,
-        user: {
-          _id: this.state.user_id,
-        },
+    let message = {
+      _id: 1,
+      text: '',
+      createdAt: new Date(),
+      image: url,
+      user: {
+        _id: new Date().valueOf(),
       },
-    ];
+    };
 
     this.sendToSocket(message);
 
@@ -120,7 +114,6 @@ export default class ChatInterface extends React.Component {
   };
 
   render() {
-    console.log(this.state.messages);
     const {name} = this.state;
     return (
       <Container>
@@ -147,11 +140,9 @@ export default class ChatInterface extends React.Component {
 
         {this.state.emoji_modal ? (
           <Container style={{flex: 1}}>
-            <EmojiSelector
-              showSearchBar={false}
-              columns={8}
+            <EmojiInput
               onEmojiSelected={emoji => {
-                this.setState(previousState => ({text: previousState.text + '  ' + emoji}));
+                this.setState(previousState => ({text: previousState.text + '  ' + emoji.char}));
               }}
             />
           </Container>
