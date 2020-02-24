@@ -43,11 +43,12 @@ exports.upload_image = async function(req, res) {
     let photo = await models.Photo.create({...req.body, name: req.file.filename});
     if (req.body.is_profile == 'true') {
       await models.Photo.update({is_profile: false}, {where: {id: {$not: photo.id}, user_id: req.body.userId}});
-      //await models.User.update({profile_pic: req.file.filename});
+      await models.sequelize.query(
+        `update users set profile_pic = '${req.file.filename}' where id = ${parseInt(req.body.userId)}`,
+      );
     }
     res.json({ok: true, photo});
   } catch (error) {
-    console.log(error, 'I am Here ...');
     res.json({ok: false, error});
   }
 };

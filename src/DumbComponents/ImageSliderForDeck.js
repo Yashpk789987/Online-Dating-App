@@ -35,9 +35,6 @@ export default class ImageSliderForDeck extends React.Component {
       this.setState({loading: false, images: response.photos});
     }
   };
-  componentDidUpdate(prev, next) {
-    console.log(prev, next);
-  }
   render() {
     if (this.state.loading) {
       return <Spinner color="orange" />;
@@ -45,7 +42,6 @@ export default class ImageSliderForDeck extends React.Component {
     return (
       <ScrollView horizontal={true}>
         {this.state.images.map(item => {
-          console.log(this.state.images, this.props.userId);
           return (
             <ImageLoad
               resizeMode="cover"
