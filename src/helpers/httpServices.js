@@ -57,9 +57,7 @@ const uploadImage = async (url, body, uploadProgress = e => {}) => {
     const token = await getFromCache('token');
     var form = new FormData();
     form.append('pic', photo);
-    if (body.is_profile) {
-      form.append('is_profile', body.is_profile);
-    }
+    form.append('is_profile', body.is_profile);
     const result2 = await getDataFromToken();
     const {ok, data} = result2;
     if (ok) {

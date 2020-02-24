@@ -26,20 +26,6 @@ import {
   Button,
 } from 'native-base';
 
-var images = [
-  require('../../images/g2.jpg'),
-  require('../../images/g3.jpg'),
-  require('../../images/g4.jpg'),
-  require('../../images/g5.jpg'),
-  require('../../images/g6.jpg'),
-  require('../../images/g7.jpg'),
-  require('../../images/g8.jpg'),
-  require('../../images/g9.jpg'),
-  require('../../images/g5.jpg'),
-  require('../../images/g6.jpg'),
-  require('../../images/g7.jpg'),
-];
-
 export default class Profile extends React.Component {
   state = {
     activeIndex: 1,
@@ -53,6 +39,7 @@ export default class Profile extends React.Component {
       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSfbXfGdccYWDfV83TGwNkVUv80gOfKsXQjnfAw3FYiVMD7X4kn',
     photos: [],
     upload_fraction: 0,
+    upload_fraction_pic: 0,
   };
 
   getAndSetAge = userdata => {
@@ -72,8 +59,12 @@ export default class Profile extends React.Component {
     }
   };
 
-  uploadProgress = e => {
+  uploadProfileProgress = e => {
     this.setState({upload_fraction: parseFloat(e.loaded / e.total)});
+  };
+
+  uploadPicProgress = e => {
+    this.setState({upload_fraction_pic: parseFloat(e.loaded / e.total)});
   };
 
   loadImages = async () => {
@@ -90,20 +81,20 @@ export default class Profile extends React.Component {
     }
   };
 
-  openImagePicker = async () => {
+  openImagePicker = async is_profile => {
     try {
-      let res = await openImagePicker('Select Profile Pic', 'images');
+      let res = await openImagePicker(is_profile ? 'Select Profile Pic' : 'Select Pic', 'images');
       this.setState(state => ({profile_pic_uri: '', loading: true}));
 
       let result = await uploadImage(
         'user/upload-image',
-        {pic: {uri: res.uri, type: 'image/jpeg'}, is_profile: true},
-        this.uploadProgress,
+        {pic: {uri: res.uri, type: 'image/jpeg'}, is_profile: is_profile},
+        is_profile ? this.uploadProfileProgress : this.uploadPicProgress,
       );
 
       if (result.ok) {
-        console.log(result, 'upload Image ');
         this.setState({profile_pic_uri: `${baseurl}/user_images/${result.photo.name}`, loading: false});
+        this.loadImages();
       }
     } catch (error) {
       console.log(error);
@@ -145,12 +136,26 @@ export default class Profile extends React.Component {
             </TouchableOpacity>
           </Right>
         </Header>
+
+        {this.state.upload_fraction_pic === 0 || this.state.upload_fraction_pic === 1 ? null : (
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <ProgressBarAndroid
+              styleAttr="Horizontal"
+              style={{width: '80%'}}
+              indeterminate={false}
+              color="white"
+              progress={this.state.upload_fraction_pic}
+            />
+            <Text style={{color: 'white'}}>Uploading {`${parseInt(this.state.upload_fraction_pic * 100)} %`} </Text>
+          </View>
+        )}
+
         <Content>
           <Card
             style={{
               height: this.state.upload_fraction > 0 && this.state.upload_fraction < 1 ? height * 0.55 : height * 0.5,
             }}>
-            <TouchableOpacity onPress={this.openImagePicker}>
+            <TouchableOpacity onPress={() => this.openImagePicker(true)}>
               <CardItem
                 cardBody
                 style={{
@@ -163,8 +168,6 @@ export default class Profile extends React.Component {
                 ) : (
                   <ImageLoad
                     style={{height: height * 0.25, width: '60%', borderRadius: 20}}
-                    isShowActivity={false}
-                    loadingStyle={{size: 'large', color: 'blue'}}
                     source={{uri: profile_pic_uri}}
                   />
                 )}
@@ -276,6 +279,32 @@ export default class Profile extends React.Component {
                   </View>
                 );
               })}
+              <TouchableOpacity onPress={() => this.openImagePicker(false)}>
+                <View
+                  style={[
+                    {width: width / 3},
+                    {height: width / 3},
+                    {marginBottom: 0, marginTop: 4},
+                    {
+                      borderStyle: 'dashed',
+                      borderWidth: 3,
+                      borderRadius: 5,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    },
+                  ]}>
+                  <Icon style={{fontSize: 80}} name="add" />
+                  {this.state.upload_fraction_pic === 0 || this.state.upload_fraction_pic === 1 ? null : (
+                    <ProgressBarAndroid
+                      styleAttr="Horizontal"
+                      style={{width: '100%'}}
+                      indeterminate={false}
+                      color="orange"
+                      progress={this.state.upload_fraction_pic}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </Content>

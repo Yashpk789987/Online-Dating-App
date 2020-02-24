@@ -61,6 +61,10 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      profile_pic: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       location: {
         type: DataTypes.GEOMETRY('POINT'),
         notEmpty: {
@@ -77,8 +81,5 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   );
-
-  //   User.associate = models => {};
-
   return User;
 };

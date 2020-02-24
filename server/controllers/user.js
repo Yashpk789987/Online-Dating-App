@@ -41,7 +41,10 @@ exports.login = async function(req, res) {
 exports.upload_image = async function(req, res) {
   try {
     let photo = await models.Photo.create({...req.body, name: req.file.filename});
-    await models.Photo.update({is_profile: false}, {where: {id: {$not: photo.id}, user_id: req.body.userId}});
+    if (req.body.is_profile == 'true') {
+      await models.Photo.update({is_profile: false}, {where: {id: {$not: photo.id}, user_id: req.body.userId}});
+      //await models.User.update({profile_pic: req.file.filename});
+    }
     res.json({ok: true, photo});
   } catch (error) {
     console.log(error, 'I am Here ...');
