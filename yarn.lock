@@ -4920,6 +4920,14 @@ react-native-callkeep@^3.0.9:
   resolved "https://registry.yarnpkg.com/react-native-callkeep/-/react-native-callkeep-3.0.9.tgz#0df0f85c4c3f1aef631ca5354a72fbd13fe018e4"
   integrity sha512-EDGwhkpihCxoEWk2IaEmu2QmWZYXN6cTbsQ/xSoiFexYBlLR84ffPWrwRbi9D1IiOsHmbFRWpqhFV36gLxMyIA==
 
+react-native-card-stack-swiper@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-card-stack-swiper/-/react-native-card-stack-swiper-1.2.4.tgz#361f63b66fd9ccda165b28d66929d84ec30e8204"
+  integrity sha512-NTu7u89HWWjoadZdvnoq7oZAOFP274GH95GhCIQOTfMJAgmmsT+bYG1xpkePtvkaawUG0POvREMrcUvgmfvbBQ==
+  dependencies:
+    prop-types "15.5.10"
+    react-lifecycles-compat "^3.0.4"
+
 react-native-casino-roulette@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-native-casino-roulette/-/react-native-casino-roulette-1.6.0.tgz#22336dc5ccb212f48c9f6b013733737df02d246b"

@@ -16,6 +16,7 @@ import {
   CardItem,
   cardBody,
 } from 'native-base';
+
 import {ScrollView, StyleSheet, Text, View, Dimensions, Animated, PanResponder, TouchableOpacity} from 'react-native';
 import {getData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
@@ -23,18 +24,11 @@ import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
 SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.35;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-const Users = [
-  {id: '1', uri: require('../../images/g5.jpg')},
-  {id: '2', uri: require('../../images/g6.jpg')},
-  {id: '3', uri: require('../../images/g7.jpg')},
-  {id: '4', uri: require('../../images/g8.jpg')},
-];
 
 export default class Deck extends React.Component {
   constructor() {
@@ -48,7 +42,7 @@ export default class Deck extends React.Component {
     };
   }
 
-  componentDidMount = async () => {
+  loadUsers = async () => {
     this.setState({loading: true});
     let result = await getDataFromToken();
     if (result.ok) {
@@ -58,36 +52,43 @@ export default class Deck extends React.Component {
     }
   };
 
+  componentDidMount = async () => {
+    this.loadUsers();
+  };
+
   renderUsers = () => {
     return (
-      <DeckSwiper
-        looping={false}
-        dataSource={this.state.users}
-        renderItem={item => (
-          <Card style={{backgroundColor: 'white'}}>
-            <CardItem>
-              <Left>
-                <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
-                <Body>
-                  <Text style={{fontSize: 20, fontWeight: 'bold'}}>{item.username}</Text>
-                  <Text note>{item.username}</Text>
-                </Body>
-              </Left>
-            </CardItem>
-            <ImageSliderForDeck userId={item.id} />
-            <View style={{flex: 0.5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Button transparent>
-                <Icon_ style={{color: 'orange'}} active name="thumbs-up" />
-                <Text style={{color: 'orange'}}>12 Likes</Text>
-              </Button>
-              <Button transparent onPress={() => alert('hello...')}>
-                <Text style={{color: 'orange'}}>View Profile</Text>
-                <Icon_ style={{color: 'orange'}} active name="arrow-forward" />
-              </Button>
-            </View>
-          </Card>
-        )}
-      />
+      <CardStack
+        ref={swiper => {
+          this.swiper = swiper;
+        }}>
+        {this.state.users.map(item => {
+          return (
+            <Card style={{backgroundColor: 'white'}}>
+              <CardItem>
+                <Left>
+                  <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
+                  <Body>
+                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>{item.username}</Text>
+                    <Text note>{item.username}</Text>
+                  </Body>
+                </Left>
+              </CardItem>
+              <ImageSliderForDeck userId={item.id} />
+              <View style={{flex: 0.5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                <Button transparent>
+                  <Icon_ style={{color: 'orange'}} active name="thumbs-up" />
+                  <Text style={{color: 'orange'}}>12 Likes</Text>
+                </Button>
+                <Button transparent onPress={() => alert('hello...')}>
+                  <Text style={{color: 'orange'}}>View Profile</Text>
+                  <Icon_ style={{color: 'orange'}} active name="arrow-forward" />
+                </Button>
+              </View>
+            </Card>
+          );
+        })}
+      </CardStack>
     );
   };
 
@@ -114,8 +115,58 @@ export default class Deck extends React.Component {
           ) : (
             <View style={{flex: 1}}>{this.renderUsers()}</View>
           )}
-          <View style={{height: 60}}></View>
+          <View style={{flex: 0.15, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
+            <TouchableOpacity
+              style={{
+                borderWidth: 3,
+                borderColor: 'red',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 50,
+                height: 50,
+                backgroundColor: 'white',
+                borderRadius: 25,
+              }}
+              onPress={() => {
+                this.swiper.swipeLeft();
+              }}>
+              <Icon name={'md-thumbs-down'} size={30} color="red" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                borderWidth: 3,
+                borderColor: 'orange',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 50,
+                height: 50,
+                backgroundColor: 'white',
+                borderRadius: 25,
+              }}
+              onPress={() => {
+                this.loadUsers();
+              }}>
+              <Icon name={'md-refresh'} size={30} color="orange" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                borderWidth: 3,
+                borderColor: '#01a699',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 50,
+                height: 50,
+                backgroundColor: 'white',
+                borderRadius: 25,
+              }}
+              onPress={() => {
+                this.swiper.swipeRight();
+              }}>
+              <Icon name={'md-thumbs-up'} size={30} color="#01a699" />
+            </TouchableOpacity>
+          </View>
         </View>
+        <View></View>
       </Container>
     );
   }

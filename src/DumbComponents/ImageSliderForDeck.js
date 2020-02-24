@@ -20,7 +20,7 @@ import {
 import {getData} from '../helpers/httpServices';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
-SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.35;
+SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.45;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class ImageSliderForDeck extends React.Component {

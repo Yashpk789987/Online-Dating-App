@@ -25,6 +25,7 @@
     "react": "16.9.0",
     "react-native": "^0.61.5",
     "react-native-callkeep": "^3.0.9",
+    "react-native-card-stack-swiper": "^1.2.4",
     "react-native-casino-roulette": "^1.6.0",
     "react-native-deck-swiper": "^1.6.7",
     "react-native-emoji-input": "^1.1.10",
