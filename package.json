@@ -26,6 +26,7 @@
     "react-native": "^0.61.5",
     "react-native-callkeep": "^3.0.9",
     "react-native-casino-roulette": "^1.6.0",
+    "react-native-deck-swiper": "^1.6.7",
     "react-native-emoji-input": "^1.1.10",
     "react-native-emoji-selector": "^0.1.8",
     "react-native-geocoding": "^0.4.0",
@@ -42,6 +43,7 @@
     "react-native-screens": "^2.0.0-alpha.23",
     "react-native-star-rating": "^1.1.0",
     "react-native-vector-icons": "^6.6.0",
+    "react-native-view-overflow": "^0.0.5",
     "react-native-webrtc": "^1.75.3",
     "react-navigation": "^4.0.10",
     "react-navigation-stack": "^2.0.15",
@@ -49,7 +51,7 @@
     "rn-placeholder": "^3.0.0",
     "socket.io-client": "^2.3.0",
     "uuid": "^3.4.0",
-    "yarn": "^1.21.1"
+    "yarn": "^1.22.0"
   },
   "devDependencies": {
     "@babel/core": "7.6.3",

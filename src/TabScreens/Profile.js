@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid} from 'react-native';
+import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid, FlatList} from 'react-native';
 import {getFromCache} from '../helpers/cacheTools';
 import decode from 'jwt-decode';
 import moment from 'moment';
@@ -256,6 +256,7 @@ export default class Profile extends React.Component {
                 <Text style={{color: this.state.activeIndex === 2 ? 'orange' : 'black', fontSize: 20}}>Highlights</Text>
               </Button>
             </View>
+
             <View style={{flexDirection: 'row', flexWrap: 'wrap', backgroundColor: 'white'}}>
               {this.state.photos.map((image, index) => {
                 return (
@@ -292,6 +293,7 @@ export default class Profile extends React.Component {
                       justifyContent: 'center',
                       alignItems: 'center',
                     },
+                    {paddingLeft: '1%'},
                   ]}>
                   <Icon style={{fontSize: 80}} name="add" />
                   {this.state.upload_fraction_pic === 0 || this.state.upload_fraction_pic === 1 ? null : (

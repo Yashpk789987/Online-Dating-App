@@ -10,7 +10,7 @@ const getData = async url => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        auth: token,
+        auth: JSON.parse(token),
       },
     });
     const result = await response.json();
@@ -22,6 +22,7 @@ const getData = async url => {
     } else {
       return result;
     }
+    return result;
   } catch (e) {
     console.log(url, e);
   }
