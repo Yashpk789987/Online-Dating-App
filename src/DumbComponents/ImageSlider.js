@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
-import {Image, Text, ScrollView, Dimensions, View} from 'react-native';
+import {Text, ScrollView, Dimensions, View} from 'react-native';
 import {PlaceholderMedia, Placeholder, Shine} from 'rn-placeholder';
+import ImageLoad from 'react-native-image-placeholder';
 var {width} = Dimensions.get('window');
 
 function ImageSlider({photos}) {
@@ -17,7 +18,7 @@ function ImageSlider({photos}) {
       {photos.map((item, index) => {
         return (
           <>
-            <Image
+            <ImageLoad
               onLoadEnd={() => setLoaded(true)}
               style={{width: width, height: 250}}
               resizeMode="cover"

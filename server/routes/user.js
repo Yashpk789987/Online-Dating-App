@@ -26,6 +26,8 @@ router.all('/*', async function(req, res, next) {
 
 router.get('/all-users-except-self/:userId', userController.allUsersExceptSelf);
 
+router.get('/user-by-id/:userId' , userController.findById)
+
 router.get('/photos/:userId', userController.allPhotos);
 
 module.exports = router;

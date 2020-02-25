@@ -1,57 +1,3 @@
-// var express = require('express');
-
-// var app = express();
-// var path = require('path');
-// ///////// VIEW ENGINE ///////////////
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'ejs');
-// //////// VIEW ENGINE ///////////////
-// ////// STATIC ///////
-// app.use(express.static(path.join(__dirname, 'public')));
-// ////// STATIC ///////
-// app.get('/', function(req, res) {
-//   res.render('chat');
-// });
-
-// var server = require('http').createServer(app);
-// var io = require('socket.io')(server);
-
-// server.listen('3000', function() {
-//   console.log(`Example app listening on port 3000!`);
-// });
-
-// let socketsArray = [];
-
-// io.on('connection', socket => {
-//   socketsArray.push(socket.id);
-//   socket.broadcast.emit('add-users', {
-//     users: [socket.id],
-//   });
-
-//   socket.on('disconnect', () => {
-//     socketsArray.splice(socketsArray.indexOf(socket.id), 1);
-//     io.emit('remove-user', socket.id);
-//   });
-
-//   //////////// OFFER LISTENER //////////////
-//   socket.on('make-offer', function(data) {
-//     socket.to(data.to).emit('offer-made', {
-//       offer: data.offer,
-//       socket: socket.id,
-//     });
-//   });
-
-//   /////////// OFFER LISTENER //////////////
-//   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
-//   socket.on('make-answer', function(data) {
-//     socket.to(data.to).emit('answer-made', {
-//       socket: socket.id,
-//       answer: data.answer,
-//     });
-//   });
-//   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
-// });
-
 var jwt = require('jsonwebtoken');
 var express = require('express');
 var cookieParser = require('cookie-parser');
@@ -63,7 +9,7 @@ var path = require('path');
 //////// IMPORTING ROUTES ///////////
 
 var userRouter = require('./routes/user');
-
+var likeRouter = require('./routes/like');
 //////// IMPORTING ROUTES ///////////
 
 ///////// VIEW ENGINE ///////////////
@@ -80,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /////// USING ROUTES /////
 app.use('/user', userRouter);
-
+app.use('/like', likeRouter);
 /////// USING ROUTES /////
 
 app.get('/', function(req, res) {

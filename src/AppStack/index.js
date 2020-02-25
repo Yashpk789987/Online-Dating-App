@@ -2,6 +2,7 @@ import React from 'react';
 import TabScreens from '../TabScreens';
 import PlaceDetail from './PlaceDetail';
 import ChatInterface from './ChatInterface';
+import ViewProfile from './ViewProfile';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 
@@ -16,6 +17,9 @@ const App = createAppContainer(
       },
       ChatInterface: {
         screen: ChatInterface,
+      },
+      ViewProfile: {
+        screen: ViewProfile,
       },
     },
     {

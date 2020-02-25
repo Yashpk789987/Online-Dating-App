@@ -18,7 +18,7 @@ import {
 } from 'native-base';
 
 import {ScrollView, StyleSheet, Text, View, Dimensions, Animated, PanResponder, TouchableOpacity} from 'react-native';
-import {getData} from '../helpers/httpServices';
+import {getData, postData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
 import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
 
@@ -39,6 +39,7 @@ export default class Deck extends React.Component {
       currentIndex: 0,
       users: [],
       loading: false,
+      userId: -1,
     };
   }
 
@@ -48,12 +49,20 @@ export default class Deck extends React.Component {
     if (result.ok) {
       let {id} = result.data;
       let response = await getData(`user/all-users-except-self/${id}`);
-      this.setState({loading: false, users: response.users});
+      await this.setState({loading: false, users: response.users});
+      return id;
     }
   };
 
+  makeLike = async index => {
+    let profile = this.state.users[index];
+    let data = {profileId: profile.id, userId: this.state.userId};
+    let response = await postData(`like/create`, data);
+  };
+
   componentDidMount = async () => {
-    this.loadUsers();
+    let userId = await this.loadUsers();
+    this.setState({userId});
   };
 
   renderUsers = () => {
@@ -61,6 +70,9 @@ export default class Deck extends React.Component {
       <CardStack
         ref={swiper => {
           this.swiper = swiper;
+        }}
+        onSwipedRight={index => {
+          this.makeLike(index);
         }}>
         {this.state.users.map(item => {
           return (
@@ -80,7 +92,9 @@ export default class Deck extends React.Component {
                   <Icon_ style={{color: 'orange'}} active name="thumbs-up" />
                   <Text style={{color: 'orange'}}>12 Likes</Text>
                 </Button>
-                <Button transparent onPress={() => alert('hello...')}>
+                <Button
+                  transparent
+                  onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: item.id})}>
                   <Text style={{color: 'orange'}}>View Profile</Text>
                   <Icon_ style={{color: 'orange'}} active name="arrow-forward" />
                 </Button>

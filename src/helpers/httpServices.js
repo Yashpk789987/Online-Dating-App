@@ -31,16 +31,24 @@ const getData = async url => {
 const postData = async (url, body) => {
   try {
     const token = await getFromCache('token');
-    const response = await fetch(`${BaseURL}/${url}`, {
+    const response = await fetch(`${baseurl}/${url}`, {
       method: 'POST',
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        auth: token,
+        auth: JSON.parse(token),
       },
       body: JSON.stringify(body),
     });
     const result = await response.json();
+    console.log(result, 'INside http services');
+    if (result.ok === false && result.code !== undefined && result.code === 'auth_failed') {
+      alert('Session Expired\nPlease Login Again');
+      await removeFromCache('token');
+      return null;
+    } else {
+      return result;
+    }
     return result;
   } catch (e) {
     console.log(url, e);

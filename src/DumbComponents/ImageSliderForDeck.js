@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, Dimensions} from 'react-native';
+import {ScrollView, Dimensions, FlatList} from 'react-native';
 import ImageLoad from 'react-native-image-placeholder';
 import {
   Left,
@@ -17,6 +17,7 @@ import {
   CardItem,
   cardBody,
 } from 'native-base';
+
 import {getData} from '../helpers/httpServices';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -40,8 +41,10 @@ export default class ImageSliderForDeck extends React.Component {
       return <Spinner color="orange" />;
     }
     return (
-      <ScrollView horizontal={true}>
-        {this.state.images.map(item => {
+      <FlatList
+        data={this.state.images}
+        horizontal={true}
+        renderItem={({item}) => {
           return (
             <ImageLoad
               resizeMode="cover"
@@ -49,8 +52,14 @@ export default class ImageSliderForDeck extends React.Component {
               source={{uri: `${baseurl}/user_images/${item.name}`}}
             />
           );
-        })}
-      </ScrollView>
+        }}
+        keyExtractor={item => item.id}
+        removeClippedSubviews={true}
+        initialNumToRender={2}
+        updateCellsBatchingPeriod={1}
+        updateCellsBatchingPeriod={100}
+        windowSize={4}
+      />
     );
   }
 }

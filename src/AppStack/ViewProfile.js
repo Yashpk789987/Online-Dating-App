@@ -1,15 +1,14 @@
 import React from 'react';
 import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid, FlatList} from 'react-native';
-import {getFromCache} from '../helpers/cacheTools';
+
 import decode from 'jwt-decode';
 import moment from 'moment';
 import {getDataFromToken} from '../helpers/tokenutils';
 import {getAddressFromLatAndLong} from '../helpers/locationutils';
-import {openImagePicker} from '../helpers/imageutils';
+
 import {uploadImage, getData} from '../helpers/httpServices';
 import baseurl from '../helpers/baseurl';
 import ImageLoad from 'react-native-image-placeholder';
-import ImageResizer from 'react-native-image-resizer';
 
 import {
   Container,
@@ -60,14 +59,6 @@ export default class Profile extends React.Component {
     }
   };
 
-  uploadProfileProgress = e => {
-    this.setState({upload_fraction: parseFloat(e.loaded / e.total)});
-  };
-
-  uploadPicProgress = e => {
-    this.setState({upload_fraction_pic: parseFloat(e.loaded / e.total)});
-  };
-
   loadImages = async () => {
     let result = await getData(`user/all-images/${this.state.userId}`);
     if (result.ok) {
@@ -82,39 +73,23 @@ export default class Profile extends React.Component {
     }
   };
 
-  openImagePicker = async is_profile => {
-    try {
-      let res = await openImagePicker(is_profile ? 'Select Profile Pic' : 'Select Pic', 'images');
-      this.setState(state => ({profile_pic_uri: '', loading: true}));
-      let compressResponse = await ImageResizer.createResizedImage(res.uri, 250, 600, 'JPEG', 100);
-
-      let result = await uploadImage(
-        'user/upload-image',
-        {pic: {uri: compressResponse.uri, type: 'image/jpeg'}, is_profile: is_profile},
-        is_profile ? this.uploadProfileProgress : this.uploadPicProgress,
-      );
-
-      if (result.ok) {
-        this.setState({profile_pic_uri: `${baseurl}/user_images/${result.photo.name}`, loading: false});
-        this.loadImages();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   componentDidMount = async () => {
-    this.setState({loading: true});
-    const result = await getDataFromToken();
-    const {ok, data} = result;
+    let userId = this.props.navigation.getParam('userId');
+    this.setState({loading: true, userId});
+    let result = await getData(`user/user-by-id/${userId}`);
+
+    const {ok, user, photos} = result;
     if (ok) {
-      await this.setState({username: data.username, userId: data.id, loading: false});
-      this.getAndSetAge(data);
-      this.getAndSetAddress(data);
-      this.loadImages();
+      await this.setState({
+        username: user.username,
+        loading: false,
+        profile_pic_uri: `${baseurl}/user_images/${user.profile_pic}`,
+        photos,
+      });
+      this.getAndSetAge(user);
+      this.getAndSetAddress(user);
     } else {
-      ///// Move To Home
-      this.props.screenProps.authRef.navigate('AuthLoading');
+      /// Handle Else
     }
   };
   render() {
@@ -132,63 +107,31 @@ export default class Profile extends React.Component {
           <Body>
             <Text style={{color: 'white', fontSize: 20, width: '120%', fontWeight: 'bold'}}>{username}</Text>
           </Body>
-          <Right>
-            <TouchableOpacity onPress={() => alert('Menu Opened')}>
-              <Icon name="menu" style={{color: 'white'}} />
-            </TouchableOpacity>
-          </Right>
+          <Right></Right>
         </Header>
-
-        {this.state.upload_fraction_pic === 0 || this.state.upload_fraction_pic === 1 ? null : (
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <ProgressBarAndroid
-              styleAttr="Horizontal"
-              style={{width: '80%'}}
-              indeterminate={false}
-              color="white"
-              progress={this.state.upload_fraction_pic}
-            />
-            <Text style={{color: 'white'}}>Uploading {`${parseInt(this.state.upload_fraction_pic * 100)} %`} </Text>
-          </View>
-        )}
 
         <Content>
           <Card
             style={{
               height: this.state.upload_fraction > 0 && this.state.upload_fraction < 1 ? height * 0.55 : height * 0.5,
             }}>
-            <TouchableOpacity onPress={() => this.openImagePicker(true)}>
-              <CardItem
-                cardBody
-                style={{
-                  height: height * 0.27,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                {this.state.profile_pic_uri === '' ? (
-                  <Text>Loading ....</Text>
-                ) : (
-                  <ImageLoad
-                    style={{height: height * 0.25, width: '60%', borderRadius: 20}}
-                    source={{uri: profile_pic_uri}}
-                  />
-                )}
-              </CardItem>
-            </TouchableOpacity>
-            {this.state.upload_fraction === 0 || this.state.upload_fraction === 1 ? null : (
-              <>
-                <ProgressBarAndroid
-                  styleAttr="Horizontal"
-                  style={{marginLeft: '10%', marginRight: '10%'}}
-                  indeterminate={false}
-                  color="#2196F3"
-                  progress={this.state.upload_fraction}
+            <CardItem
+              cardBody
+              style={{
+                height: height * 0.27,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              {this.state.profile_pic_uri === '' ? (
+                <Text>Loading ....</Text>
+              ) : (
+                <ImageLoad
+                  style={{height: height * 0.25, width: '60%', borderRadius: 20}}
+                  source={{uri: profile_pic_uri}}
                 />
-                <Text style={{marginLeft: '40%', marginRight: '10%'}}>
-                  Uploading {`${parseInt(this.state.upload_fraction * 100)} %`}{' '}
-                </Text>
-              </>
-            )}
+              )}
+            </CardItem>
+
             <CardItem
               style={{
                 height: height * 0.06,
@@ -282,33 +225,6 @@ export default class Profile extends React.Component {
                   </View>
                 );
               })}
-              <TouchableOpacity onPress={() => this.openImagePicker(false)}>
-                <View
-                  style={[
-                    {width: width / 3},
-                    {height: width / 3},
-                    {marginBottom: 0, marginTop: 4},
-                    {
-                      borderStyle: 'dashed',
-                      borderWidth: 3,
-                      borderRadius: 5,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    },
-                    {paddingLeft: '1%'},
-                  ]}>
-                  <Icon style={{fontSize: 80}} name="add" />
-                  {this.state.upload_fraction_pic === 0 || this.state.upload_fraction_pic === 1 ? null : (
-                    <ProgressBarAndroid
-                      styleAttr="Horizontal"
-                      style={{width: '100%'}}
-                      indeterminate={false}
-                      color="orange"
-                      progress={this.state.upload_fraction_pic}
-                    />
-                  )}
-                </View>
-              </TouchableOpacity>
             </View>
           </View>
         </Content>

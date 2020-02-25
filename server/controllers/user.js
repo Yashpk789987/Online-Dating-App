@@ -65,13 +65,32 @@ exports.getImages = async function(req, res) {
 };
 
 exports.allUsersExceptSelf = async function(req, res) {
-  let userId = req.params.userId;
-  let users = await models.User.findAll({where: {id: {$not: userId}}});
-  res.json({ok: true, users});
+  try {
+    let userId = req.params.userId;
+    let users = await models.User.findAll({where: {id: {$not: userId}}});
+    res.json({ok: true, users});
+  } catch (error) {
+    res.json({ok: false, users: [], error});
+  }
+};
+
+exports.findById = async function(req, res) {
+  try {
+    let userId = req.params.userId;
+    let user = await models.User.findById(userId);
+    let photos = await models.Photo.findAll({where: {user_id: userId}});
+    res.json({ok: true, user, photos});
+  } catch (error) {
+    res.json({ok: false, user: {}, photos: [], error});
+  }
 };
 
 exports.allPhotos = async function(req, res) {
-  let userId = req.params.userId;
-  let photos = await models.Photo.findAll({where: {user_id: userId}});
-  res.json({ok: true, photos});
+  try {
+    let userId = req.params.userId;
+    let photos = await models.Photo.findAll({where: {user_id: userId}});
+    res.json({ok: true, photos});
+  } catch (error) {
+    res.json({ok: false, photos: [], error});
+  }
 };

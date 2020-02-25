@@ -5035,6 +5035,11 @@ react-native-image-placeholder@^1.0.14:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-image-resizer@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.2.0.tgz#3b39ac1091511b88b821d68e4d51d9db61c2fd3e"
+  integrity sha512-G8Jpqwo41TMB1EEFwzwwFSVHvPOqxjalXHnQ0vl6dg0E6zVDlHKdUt+aprGI2ohM1k2e+NrB6ugSGueLVWPSWw==
+
 react-native-incall-manager@^3.2.7:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-3.2.7.tgz#3a6f34bd4bb89ed4f0bcaa2ffc571e9b2f0c479b"

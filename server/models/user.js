@@ -61,6 +61,15 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      about: {
+        type: DataTypes.STRING,
+        validate: {
+          len: {
+            args: [20, 100],
+            msg: 'Your Description needs to be between 20 and 100 characters lonng',
+          },
+        },
+      },
       profile_pic: {
         type: DataTypes.STRING,
         allowNull: true,

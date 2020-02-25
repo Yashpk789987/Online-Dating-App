@@ -18,6 +18,7 @@ const sequelize = new Sequelize('online-dating', 'root', '', {
 const models = {
   User: sequelize.import('./user'),
   Photo: sequelize.import('./photo'),
+  Like: sequelize.import('./like'),
 };
 
 Object.keys(models).forEach(modelName => {
