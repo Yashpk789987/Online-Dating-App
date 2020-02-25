@@ -146,6 +146,7 @@ export default class Profile extends React.Component {
                 {age}
               </Text>
               <Text note>{address}</Text>
+              <Text>{'I am Very Open type of person'}</Text>
             </CardItem>
             <View
               style={{

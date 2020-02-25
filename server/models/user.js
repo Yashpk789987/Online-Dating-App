@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
         validate: {
           isInt: {
-            msg: 'This Field Must be number ',
+            msg: 'This Field Must be number',
           },
           len: {
             args: [10, 10],

@@ -21,7 +21,7 @@ import {ScrollView, StyleSheet, Text, View, Dimensions, Animated, PanResponder, 
 import {getData, postData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
 import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
-
+import DeckCard from '../DumbComponents/DeckCard';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
@@ -49,7 +49,7 @@ export default class Deck extends React.Component {
     if (result.ok) {
       let {id} = result.data;
       let response = await getData(`user/all-users-except-self/${id}`);
-      await this.setState({loading: false, users: response.users});
+      await this.setState({users: response.users});
       return id;
     }
   };
@@ -62,7 +62,7 @@ export default class Deck extends React.Component {
 
   componentDidMount = async () => {
     let userId = await this.loadUsers();
-    this.setState({userId});
+    await this.setState({userId, loading: false});
   };
 
   renderUsers = () => {
@@ -74,32 +74,15 @@ export default class Deck extends React.Component {
         onSwipedRight={index => {
           this.makeLike(index);
         }}>
-        {this.state.users.map(item => {
+        {this.state.users.map((item, index) => {
           return (
-            <Card style={{backgroundColor: 'white'}}>
-              <CardItem>
-                <Left>
-                  <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
-                  <Body>
-                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>{item.username}</Text>
-                    <Text note>{item.username}</Text>
-                  </Body>
-                </Left>
-              </CardItem>
-              <ImageSliderForDeck userId={item.id} />
-              <View style={{flex: 0.5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                <Button transparent>
-                  <Icon_ style={{color: 'orange'}} active name="thumbs-up" />
-                  <Text style={{color: 'orange'}}>12 Likes</Text>
-                </Button>
-                <Button
-                  transparent
-                  onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: item.id})}>
-                  <Text style={{color: 'orange'}}>View Profile</Text>
-                  <Icon_ style={{color: 'orange'}} active name="arrow-forward" />
-                </Button>
-              </View>
-            </Card>
+            <DeckCard
+              makeLike={this.makeLike}
+              index={index}
+              profile={item}
+              userId={this.state.userId}
+              stackRef={this.props.screenProps.stackRef}
+            />
           );
         })}
       </CardStack>
@@ -157,8 +140,9 @@ export default class Deck extends React.Component {
                 backgroundColor: 'white',
                 borderRadius: 25,
               }}
-              onPress={() => {
-                this.loadUsers();
+              onPress={async () => {
+                let userId = await this.loadUsers();
+                await this.setState({userId, loading: false});
               }}>
               <Icon name={'md-refresh'} size={30} color="orange" />
             </TouchableOpacity>

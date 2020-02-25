@@ -29,19 +29,13 @@ const options = {
 const TabNavigator = createBottomTabNavigator(
   {
     Home: {
-      screen: Home,
+      screen: Deck,
       navigationOptions: {
         tabBarLabel: <></>,
         tabBarIcon: ({tintColor}) => <Icon name="home" style={{color: tintColor}} size={25} />,
       },
     },
-    Deck: {
-      screen: Deck,
-      navigationOptions: {
-        tabBarLabel: <></>,
-        tabBarIcon: ({tintColor}) => <Icon name="globe" style={{color: tintColor}} size={25} />,
-      },
-    },
+
     VideoChat: {
       screen: VideoChat,
       navigationOptions: {

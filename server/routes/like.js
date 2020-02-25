@@ -17,4 +17,6 @@ router.all('/*', async function(req, res, next) {
 
 router.post('/create', likeController.create);
 
+router.get('/find-by-profileId/:profileId', likeController.findByProfileId);
+
 module.exports = router;
