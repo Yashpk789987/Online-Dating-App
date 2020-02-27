@@ -35,8 +35,13 @@ export default class Like extends React.Component {
     }
   };
 
-  likeBack = async like_id => {
-    let result = await postData(`like/update-like-status`, {id: like_id, like_back: true});
+  likeBack = async (like_id, profile_id) => {
+    let result = await postData(`like/update-like-status`, {
+      id: like_id,
+      like_back: true,
+      user_id: this.state.user_id,
+      profile_id: profile_id,
+    });
     if (result.ok) {
       this.props.navigation.navigate('Your Matches');
     } else {
@@ -45,7 +50,7 @@ export default class Like extends React.Component {
   };
 
   dislikeBack = async like_id => {
-    let result = await postData(`like/update-like-status`, {id: like_id, dislike_back: true});
+    let result = await postData(`like/update-like-status`, {id: like_id, like_back: false, dislike_back: true});
     if (result.ok) {
       this.loadLikes();
     } else {
@@ -93,7 +98,7 @@ export default class Like extends React.Component {
                   justifyContent: 'center',
                   alignItems: 'space-between',
                 }}
-                onPress={() => this.likeBack(item.like_id)}>
+                onPress={() => this.likeBack(item.like_id, item.profile_id)}>
                 <Icon style={{color: 'green'}} active name="thumbs-up" />
                 <Text style={{color: 'green'}}>{'  '}Like Back</Text>
               </TouchableOpacity>

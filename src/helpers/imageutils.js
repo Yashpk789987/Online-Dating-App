@@ -16,6 +16,7 @@ const openImagePicker = async (title, path) => {
         if (response.didCancel) {
           reject({ok: false, error: 'No Image Selected'});
         } else if (response.error) {
+          console.log('Some other problem occured', response.error);
           reject({ok: false, error: 'Some other problem occured'});
         } else {
           const source = {uri: response.uri};
