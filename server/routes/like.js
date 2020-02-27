@@ -23,4 +23,6 @@ router.get('/find-by-profileId/:profileId', likeController.findByProfileId);
 
 router.get('/find-info-by-profileId/:profileId', likeController.findInfoByProfileId);
 
+router.get('/load-matches-by-profileId/:profileId', likeController.loadMatchesForProfile);
+
 module.exports = router;

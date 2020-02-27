@@ -21,6 +21,10 @@ export default class Like extends React.Component {
     } else {
       alert('Session Expired. PLease Login again');
     }
+
+    this.props.navigation.addListener('didFocus', () => {
+      this.loadLikes();
+    });
   };
 
   loadLikes = async () => {
@@ -56,7 +60,10 @@ export default class Like extends React.Component {
         data={this.state.likes}
         renderItem={({item}) => (
           <View style={{marginRight: '2%', marginLeft: '-3%'}}>
-            <ListItem avatar style={{backgroundColor: 'white'}}>
+            <ListItem
+              onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: item.profile_id})}
+              avatar
+              style={{backgroundColor: 'white'}}>
               <Left>
                 <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
               </Left>
@@ -124,6 +131,11 @@ export default class Like extends React.Component {
         <Text style={{color: 'white', marginBottom: '5%', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>
           Your Likes
         </Text>
+        {!this.state.loading && this.state.likes.length === 0 ? (
+          <View style={{alignText: 'center', alignItems: 'center'}}>
+            <Text style={{fontSize: 18, color: 'white', fontWeight: 'bold'}}>No Matches To Show...</Text>
+          </View>
+        ) : null}
         {this.state.loading ? <Spinner color="white" /> : this.renderLikes()}
       </Container>
     );
