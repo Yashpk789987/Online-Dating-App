@@ -1,5 +1,5 @@
 import decode from 'jwt-decode';
-import {getFromCache} from './cacheTools';
+import {getFromCache, removeFromCache} from './cacheTools';
 
 const getDataFromToken = async () => {
   try {
@@ -7,6 +7,8 @@ const getDataFromToken = async () => {
     let data = decode(token);
     return {ok: true, data: data};
   } catch (error) {
+    alert('Session Expired\nPlease Login Again');
+    await removeFromCache('token');
     return {ok: false, error};
   }
 };

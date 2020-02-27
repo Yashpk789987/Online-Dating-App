@@ -41,7 +41,6 @@ const postData = async (url, body) => {
       body: JSON.stringify(body),
     });
     const result = await response.json();
-    console.log(result, 'INside http services');
     if (result.ok === false && result.code !== undefined && result.code === 'auth_failed') {
       alert('Session Expired\nPlease Login Again');
       await removeFromCache('token');

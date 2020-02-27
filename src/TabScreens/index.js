@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
 import Home from './Home';
 import VideoChat from './VideoChat';
-import Chat from './Chat';
+import Chat from './Chat/index';
 import Deck from './Deck';
 import NearbyLocations from './NearbyLocations';
 

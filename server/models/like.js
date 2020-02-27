@@ -2,7 +2,11 @@ module.exports = (sequelize, DataTypes) => {
   const Like = sequelize.define(
     'like',
     {
-      likeBack: {
+      like_back: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      dislike_back: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },

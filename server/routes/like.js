@@ -17,6 +17,10 @@ router.all('/*', async function(req, res, next) {
 
 router.post('/create', likeController.create);
 
+router.post('/update-like-status', likeController.updateLikeStatus);
+
 router.get('/find-by-profileId/:profileId', likeController.findByProfileId);
+
+router.get('/find-info-by-profileId/:profileId', likeController.findInfoByProfileId);
 
 module.exports = router;

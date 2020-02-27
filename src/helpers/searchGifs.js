@@ -1,4 +1,3 @@
-const giphy = require('giphy-api')('2VHjBw7fIprfJDcVUNgRtPHfNurEw6nB');
 import baseurl from './baseurl';
 
 const searchGifs = async query => {

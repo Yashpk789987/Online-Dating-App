@@ -20,17 +20,13 @@ import {
 } from 'native-base';
 import {RTCPeerConnection, RTCSessionDescription, RTCView, mediaDevices} from 'react-native-webrtc';
 
-export default class Chat extends React.Component {
+export default class Match extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       users: [],
     };
   }
-
-  // componentDidMount() {
-  //   this.socket = this.props.screenProps.socketRef;
-  // }
 
   openChat = item => {
     this.props.screenProps.stackRef.navigate('ChatInterface', {
@@ -42,20 +38,8 @@ export default class Chat extends React.Component {
   render() {
     return (
       <Container>
-        <Header searchBar rounded>
-          <Body>
-            <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
-              <Icon name="search" style={{color: 'black'}} />
-              <Input placeholder="Search" rounded />
-            </Item>
-          </Body>
-
-          <Right>
-            <Thumbnail small source={require('../../images/g2.jpg')} />
-          </Right>
-        </Header>
         <Content style={{height: '0%'}}>
-          <Text style={{color: 'white', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>Online Users</Text>
+          <Text style={{color: 'white', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>Your Matches</Text>
           {this.props.screenProps.users.length === 0 ? (
             <Text style={{marginLeft: '25%', color: 'white', fontSize: 20}}>No Users Online ...</Text>
           ) : (
@@ -64,7 +48,7 @@ export default class Chat extends React.Component {
                 return (
                   <ListItem thumbnail>
                     <Left>
-                      <Thumbnail source={require('../../images/g5.jpg')} />
+                      <Thumbnail source={require('../../../images/g5.jpg')} />
                     </Left>
                     <Body style={{width: '50%', flex: 1, flexDirection: 'row'}}>
                       <Text style={{color: 'white', fontSize: 16}}>{item.username + '  '}</Text>
