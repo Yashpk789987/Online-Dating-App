@@ -8,6 +8,7 @@ import {Header, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 
 import {Picker} from 'emoji-mart-native';
 import searchGifs from '../helpers/searchGifs';
 import GiphySearch from '../components/GiphySearch';
+import uuid from 'uuid';
 
 export default class ChatInterface extends React.Component {
   state = {
@@ -26,6 +27,7 @@ export default class ChatInterface extends React.Component {
   };
 
   componentDidMount = async () => {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
     const user = this.props.navigation.getParam('user');
     const {user_id, username} = user;
 
@@ -49,6 +51,14 @@ export default class ChatInterface extends React.Component {
     });
   };
 
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({emoji_modal: false});
+  };
+
   closeGifModal = gif_url => {
     this.setState({
       gif_modal: false,
@@ -66,15 +76,17 @@ export default class ChatInterface extends React.Component {
   };
 
   sendGif = async url => {
-    let message = {
-      _id: 1,
-      text: '',
-      createdAt: new Date(),
-      image: url,
-      user: {
-        _id: new Date().valueOf(),
+    let message = [
+      {
+        _id: uuid.v4(),
+        text: '',
+        createdAt: new Date(),
+        image: url,
+        user: {
+          _id: 1,
+        },
       },
-    };
+    ];
 
     this.sendToSocket(message);
 
@@ -90,6 +102,7 @@ export default class ChatInterface extends React.Component {
 
   onSend(messages = []) {
     let message = {...messages[0], user: {_id: new Date().valueOf()}};
+    console.log('Regular Message', messages);
     this.sendToSocket(message);
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
@@ -106,7 +119,12 @@ export default class ChatInterface extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={{margin: 10}}
-          onPress={() => this.setState(previousState => ({emoji_modal: !previousState.emoji_modal}))}>
+          onPress={() => {
+            if (!this.state.emoji_modal) {
+              Keyboard.dismiss();
+            }
+            this.setState(previousState => ({emoji_modal: !previousState.emoji_modal}));
+          }}>
           <Icon style={{color: 'grey', size: 10}} active name={this.state.emoji_modal ? 'keypad' : 'happy'} />
         </TouchableOpacity>
       </>
@@ -128,6 +146,7 @@ export default class ChatInterface extends React.Component {
           <Right></Right>
         </Header>
         <GiftedChat
+          onFocus={() => alert('I called ...')}
           text={this.state.text}
           messages={this.state.messages}
           onInputTextChanged={text => this.setState({text})}
@@ -141,6 +160,8 @@ export default class ChatInterface extends React.Component {
         {this.state.emoji_modal ? (
           <Container style={{flex: 1}}>
             <EmojiInput
+              numColumns={10}
+              emojiFontSize={20}
               onEmojiSelected={emoji => {
                 this.setState(previousState => ({text: previousState.text + '  ' + emoji.char}));
               }}

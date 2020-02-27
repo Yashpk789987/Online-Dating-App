@@ -122,7 +122,6 @@ export default class Match extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: [],
       matches: [],
       loading: false,
       user_id: -1,
@@ -134,21 +133,22 @@ export default class Match extends React.Component {
     let result = await getDataFromToken();
     if (result.ok) {
       await this.setState({loading: false, user_id: result.data.id});
-      this.loadMatches();
+      await this.loadMatches();
     } else {
       alert('Session Expired. PLease Login again');
     }
-
-    this.props.navigation.addListener('didFocus', () => {
-      this.loadMatches();
+    this.props.navigation.addListener('didFocus', async () => {
+      await this.loadMatches();
     });
   };
+
+  componentWillReceiveProps(props) {}
 
   loadMatches = async () => {
     this.setState({loading: true});
     let result = await getData(`like/load-matches-by-profileId/${this.state.user_id}`);
     if (result.ok) {
-      this.setState({matches: result.matches, loading: false});
+      await this.setState({matches: result.matches, loading: false});
     } else {
       alert('technical Error ');
     }
@@ -167,7 +167,9 @@ export default class Match extends React.Component {
               </Left>
               <Body style={{width: '50%', flex: 1, flexDirection: 'row'}}>
                 <Text style={{color: 'white', fontSize: 16}}>{item.username + '  '}</Text>
-                <View style={{backgroundColor: 'green', width: 15, height: 15, borderRadius: 18 / 2}}></View>
+                {item.socket_id === undefined ? null : (
+                  <View style={{backgroundColor: 'green', width: 15, height: 15, borderRadius: 18 / 2}}></View>
+                )}
               </Body>
               <Right>
                 <TouchableOpacity onPress={() => this.openChat(item)}>

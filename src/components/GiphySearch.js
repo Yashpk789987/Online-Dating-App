@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect} from 'react';
-import {View, FlatList, TextInput, Button, TouchableOpacity, Image, StyleSheet} from 'react-native';
-
+import {View, FlatList, TextInput, Button, TouchableOpacity, StyleSheet} from 'react-native';
+import ImageLoad from 'react-native-image-placeholder';
 const GiphySearch = ({query, onSearch, search, search_results, onPick}) => {
   return (
     <Fragment>
@@ -23,7 +23,12 @@ const GiphySearch = ({query, onSearch, search, search_results, onPick}) => {
                   onPick(item.url);
                 }}>
                 <View>
-                  <Image onError={e => alert(e)} resizeMode={'contain'} style={styles.image} source={{uri: item.url}} />
+                  <ImageLoad
+                    onError={e => alert(e)}
+                    resizeMode={'contain'}
+                    style={styles.image}
+                    source={{uri: item.url}}
+                  />
                 </View>
               </TouchableOpacity>
             );

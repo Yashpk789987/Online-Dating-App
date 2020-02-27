@@ -59,8 +59,6 @@ io.on('connection', socket => {
     info,
   };
 
-  console.log(user);
-
   socket.emit('self-acknowledge', {
     users: socketsArray,
   });

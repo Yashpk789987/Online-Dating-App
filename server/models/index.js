@@ -19,6 +19,7 @@ const models = {
   User: sequelize.import('./user'),
   Photo: sequelize.import('./photo'),
   Like: sequelize.import('./like'),
+  Message: sequelize.import('./Message'),
 };
 
 Object.keys(models).forEach(modelName => {
