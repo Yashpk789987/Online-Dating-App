@@ -49,9 +49,9 @@ export default class App extends React.Component {
     } else {
     }
   };
-  componentDidMount() {
+  componentDidMount = async () => {
     this.askPermissions();
-  }
+  };
   render() {
     return (
       <StyleProvider style={getTheme()}>

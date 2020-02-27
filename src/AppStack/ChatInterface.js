@@ -150,7 +150,7 @@ export default class ChatInterface extends React.Component {
           <></>
         )}
 
-        <Modal style={{height: 300}} coverScreen={false} isVisible={this.state.gif_modal}>
+        <Modal coverScreen={false} isVisible={this.state.gif_modal}>
           <View style={styles.modal_body}>
             <TouchableOpacity
               onPress={() => {

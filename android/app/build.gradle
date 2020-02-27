@@ -204,7 +204,10 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.android.support:support-v4:23.0.1"
+    implementation 'com.facebook.fresco:fresco:2.0.0'
     implementation 'com.facebook.fresco:animated-gif:2.0.0'
+    implementation 'com.facebook.fresco:animated-webp:0.11.0'
+    implementation 'com.facebook.fresco:webpsupport:0.11.0'
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':WebRTCModule')
 

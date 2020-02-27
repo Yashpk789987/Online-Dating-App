@@ -4,6 +4,20 @@ var userController = require('../controllers/user');
 var multer = require('multer');
 var upload = multer({dest: 'public/user_images/'});
 var jwt = require('jsonwebtoken');
+const fetch = require('node-fetch');
+
+///// FOR GIFS ////////
+
+router.get('/gifs/:query', async function(req, res) {
+  let query = req.params.query;
+  let response = await fetch(
+    `http://api.giphy.com/v1/gifs/search?q=${query}&api_key=2VHjBw7fIprfJDcVUNgRtPHfNurEw6nB&limit=20`,
+  );
+  let data = await response.json();
+  res.json({ok: true, data: data});
+});
+
+//// FOR GIFS /////////
 
 router.post('/create', userController.create);
 
@@ -12,6 +26,11 @@ router.post('/login', userController.login);
 router.post('/upload-image', upload.single('pic'), userController.upload_image);
 
 router.get('/all-images/:userId', userController.getImages);
+
+router.post('/demo', function(req, res) {
+  console.log('data', req.body);
+  res.json({ok: true});
+});
 
 router.all('/*', async function(req, res, next) {
   try {
@@ -26,7 +45,7 @@ router.all('/*', async function(req, res, next) {
 
 router.get('/all-users-except-self/:userId', userController.allUsersExceptSelf);
 
-router.get('/user-by-id/:userId' , userController.findById)
+router.get('/user-by-id/:userId', userController.findById);
 
 router.get('/photos/:userId', userController.allPhotos);
 

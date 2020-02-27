@@ -1,19 +1,19 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('saanviin_dating', 'saanviin_dating', 'Reactnative@2018', {
-  host: '68.66.224.58',
-  dialect: 'mysql',
-  define: {
-    underscored: true,
-  },
-});
-
-// const sequelize = new Sequelize('online-dating', 'root', '', {
+// const sequelize = new Sequelize('saanviin_dating', 'saanviin_dating', 'Reactnative@2018', {
+//   host: '68.66.224.58',
 //   dialect: 'mysql',
 //   define: {
 //     underscored: true,
 //   },
 // });
+
+const sequelize = new Sequelize('online-dating', 'root', '', {
+  dialect: 'mysql',
+  define: {
+    underscored: true,
+  },
+});
 
 const models = {
   User: sequelize.import('./user'),

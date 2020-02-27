@@ -23,7 +23,7 @@ const GiphySearch = ({query, onSearch, search, search_results, onPick}) => {
                   onPick(item.url);
                 }}>
                 <View>
-                  <Image resizeMode={'contain'} style={styles.image} source={{uri: item.url}} />
+                  <Image onError={e => alert(e)} resizeMode={'contain'} style={styles.image} source={{uri: item.url}} />
                 </View>
               </TouchableOpacity>
             );
