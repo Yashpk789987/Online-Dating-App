@@ -187,6 +187,7 @@ export default class Match extends React.Component {
   openChat = item => {
     this.props.screenProps.stackRef.navigate('ChatInterface', {
       user: item,
+      user_id: this.state.user_id,
       socketRef: this.props.screenProps.socketRef,
     });
   };

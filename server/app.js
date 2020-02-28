@@ -3,13 +3,29 @@ var express = require('express');
 var cookieParser = require('cookie-parser');
 
 var models = require('./models');
+var messageController = require('./controllers/message');
 var app = express();
 var path = require('path');
+
+//////// SAVING MESSAGE  ASYNC ////////
+
+async function saveMessage(data) {
+  let dbData = {message: JSON.stringify(data.message), sender: data.sender_id, receiver: data.receiver_id};
+  let result = messageController.create(dbData);
+  console.log('I am calling second');
+  if (!result.ok) {
+    console.log('ERROR INSIDE saveMessage', result.error);
+  }
+}
+
+/////// SAVING MESSAGE ASYNC ////////
 
 //////// IMPORTING ROUTES ///////////
 
 var userRouter = require('./routes/user');
 var likeRouter = require('./routes/like');
+var messageRouter = require('./routes/message');
+
 //////// IMPORTING ROUTES ///////////
 
 ///////// VIEW ENGINE ///////////////
@@ -27,6 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 /////// USING ROUTES /////
 app.use('/user', userRouter);
 app.use('/like', likeRouter);
+app.use('/message', messageRouter);
 /////// USING ROUTES /////
 
 app.get('/', function(req, res) {
@@ -107,6 +124,7 @@ io.on('connection', socket => {
 
   ////// FOR REAL TIME CHAT MESSAGING ///////////////
   socket.on('send-chat-message', function(data) {
+    saveMessage(data);
     socket.to(data.user.socket_id).emit('receive-message', {
       socket: socket.id,
       message: data.message,

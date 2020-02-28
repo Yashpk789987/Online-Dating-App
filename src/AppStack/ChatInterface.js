@@ -8,12 +8,14 @@ import {Header, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 
 import {Picker} from 'emoji-mart-native';
 import searchGifs from '../helpers/searchGifs';
 import GiphySearch from '../components/GiphySearch';
+import {getData} from '../helpers/httpServices';
 import uuid from 'uuid';
 
 export default class ChatInterface extends React.Component {
   state = {
     name: '',
     user_id: -1,
+    profile_id: -1,
     messages: [],
     emoji: '',
     text: '',
@@ -29,12 +31,11 @@ export default class ChatInterface extends React.Component {
   componentDidMount = async () => {
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
     const user = this.props.navigation.getParam('user');
-    const {user_id, username} = user;
-
+    const user_id = this.props.navigation.getParam('user_id');
+    const {profile_id, username} = user;
     this.socket = this.props.navigation.getParam('socketRef');
-    this.setState({name: username, user_id: user_id, user});
-
-    await this.setState({query: 'Trending Gifs'});
+    await this.setState({query: 'Trending Gifs', name: username, profile_id: profile_id, user_id: user_id, user});
+    this.loadMessages();
     this.searchGifs();
     let thisRef = this;
     this.socket.on('receive-message', function(data) {
@@ -49,6 +50,27 @@ export default class ChatInterface extends React.Component {
         }),
       }));
     });
+  };
+
+  loadMessages = async () => {
+    try {
+      let {user_id, profile_id} = this.state;
+      let result = await getData(`message/get-all-messages/${user_id}/${profile_id}`);
+      if (result.ok) {
+        let messages = [];
+        for (let index = 0; index < result.messages.length; index++) {
+          console.log(index, result.messages[index].message);
+          let message = JSON.parse(result.messages[index].message);
+          console.log('Message', message);
+          messages.push(message);
+        }
+
+        this.setState({messages: messages});
+      } else {
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
   };
 
   componentWillUnmount() {
@@ -83,12 +105,12 @@ export default class ChatInterface extends React.Component {
         createdAt: new Date(),
         image: url,
         user: {
-          _id: 1,
+          _id: this.state.user_id,
         },
       },
     ];
 
-    this.sendToSocket(message);
+    this.sendToSocket(message[0]);
 
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, message),
@@ -96,14 +118,17 @@ export default class ChatInterface extends React.Component {
   };
 
   sendToSocket = message => {
-    const data = {message: message, user: this.state.user};
+    const data = {
+      message: message,
+      user: this.state.user,
+      sender_id: this.state.user_id,
+      receiver_id: this.state.profile_id,
+    };
     this.socket.emit('send-chat-message', data);
   };
 
   onSend(messages = []) {
-    let message = {...messages[0], user: {_id: new Date().valueOf()}};
-    console.log('Regular Message', messages);
-    this.sendToSocket(message);
+    this.sendToSocket(messages[0]);
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }));
@@ -146,22 +171,21 @@ export default class ChatInterface extends React.Component {
           <Right></Right>
         </Header>
         <GiftedChat
-          onFocus={() => alert('I called ...')}
           text={this.state.text}
           messages={this.state.messages}
           onInputTextChanged={text => this.setState({text})}
           onSend={messages => this.onSend(messages)}
           renderActions={this.renderInput}
           user={{
-            _id: 1,
+            _id: this.state.user_id,
           }}
         />
 
         {this.state.emoji_modal ? (
           <Container style={{flex: 1}}>
             <EmojiInput
-              numColumns={10}
-              emojiFontSize={20}
+              numColumns={8}
+              emojiFontSize={30}
               onEmojiSelected={emoji => {
                 this.setState(previousState => ({text: previousState.text + '  ' + emoji.char}));
               }}
