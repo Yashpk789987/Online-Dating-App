@@ -65,6 +65,30 @@ server.listen(process.env.PORT || '3000', function() {
   console.log(`Example app listening on port 3000!`);
 });
 
+function findChatRoom(room_name) {
+  let find1 = io.sockets.adapter.rooms[room_name];
+  let find2 =
+    io.sockets.adapter.rooms[
+      room_name
+        .split('')
+        .reverse()
+        .join('')
+    ];
+
+  if (find1 === undefined && find2 === undefined) {
+    return {ok: false};
+  } else {
+    let return_room_name =
+      find1 === undefined
+        ? room_name
+            .split('')
+            .reverse()
+            .join('')
+        : room_name;
+    return {ok: true, room: return_room_name, room_object: find1 || find2};
+  }
+}
+
 let socketsArray = [];
 
 io.on('connection', socket => {
@@ -125,14 +149,44 @@ io.on('connection', socket => {
   ////// FOR REAL TIME CHAT MESSAGING ///////////////
   socket.on('send-chat-message', function(data) {
     saveMessage(data);
-    socket.to(data.user.socket_id).emit('receive-message', {
-      socket: socket.id,
-      message: data.message,
-    });
+    let result = findChatRoom(data.room_name);
+    if (result.ok) {
+      socket.to(result.room).emit('receive-message', {
+        message: data.message,
+      });
+    }
   });
   ////// FOR REAL TIME CHAT MESSAGING ///////////////
+
+  //// FOR JOINING AND LEAVING ROOM //////////
+  socket.on('join-room', function(data) {
+    let result = findChatRoom(data.room_name);
+    if (result.ok) {
+      socket.join(result.room);
+    } else {
+      socket.join(data.room_name);
+    }
+    console.log('all rooms', io.sockets.adapter.rooms);
+  });
+  socket.on('leave-room', function(data) {
+    let result = findChatRoom(data.room_name);
+
+    if (result.ok) {
+      socket.leave(result.room);
+    }
+    console.log('all rooms', io.sockets.adapter.rooms);
+  });
+  //// FOR JOINING AND LEAVING ROOM //////////
 });
 
 // var fs = require('fs');
 // var filePath = __dirname + '/public/user_images/1055cf79d446364be4c6cec8c6eb3790';
 // fs.unlinkSync(filePath);
+
+// socket.on('send-chat-message', function(data) {
+//     saveMessage(data);
+//     socket.to(data.user.socket_id).emit('receive-message', {
+//       socket: socket.id,
+//       message: data.message,
+//     });
+//   });

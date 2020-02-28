@@ -35,6 +35,7 @@ export default class ChatInterface extends React.Component {
     const {profile_id, username} = user;
     this.socket = this.props.navigation.getParam('socketRef');
     await this.setState({query: 'Trending Gifs', name: username, profile_id: profile_id, user_id: user_id, user});
+    this.joinRoom();
     this.loadMessages();
     this.searchGifs();
     let thisRef = this;
@@ -52,6 +53,18 @@ export default class ChatInterface extends React.Component {
     });
   };
 
+  joinRoom = () => {
+    this.socket.emit('join-room', {
+      room_name: `${this.state.user_id}-${this.state.profile_id}`,
+    });
+  };
+
+  leaveRoom = () => {
+    this.socket.emit('leave-room', {
+      room_name: `${this.state.user_id}-${this.state.profile_id}`,
+    });
+  };
+
   loadMessages = async () => {
     try {
       let {user_id, profile_id} = this.state;
@@ -59,12 +72,9 @@ export default class ChatInterface extends React.Component {
       if (result.ok) {
         let messages = [];
         for (let index = 0; index < result.messages.length; index++) {
-          console.log(index, result.messages[index].message);
           let message = JSON.parse(result.messages[index].message);
-          console.log('Message', message);
           messages.push(message);
         }
-
         this.setState({messages: messages});
       } else {
       }
@@ -75,6 +85,7 @@ export default class ChatInterface extends React.Component {
 
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
+    this.leaveRoom();
   }
 
   _keyboardDidShow = () => {
@@ -119,6 +130,7 @@ export default class ChatInterface extends React.Component {
 
   sendToSocket = message => {
     const data = {
+      room_name: `${this.state.user_id}-${this.state.profile_id}`,
       message: message,
       user: this.state.user,
       sender_id: this.state.user_id,

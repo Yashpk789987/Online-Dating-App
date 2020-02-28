@@ -10,7 +10,7 @@ const MaterialTopTabs = createMaterialTopTabNavigator(
     'Your Matches': {
       screen: props => <Match {...props} />,
     },
-    Likes: {
+    'Your Likes ': {
       screen: props => <Like {...props} />,
     },
   },
