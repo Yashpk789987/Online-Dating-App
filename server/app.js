@@ -12,7 +12,6 @@ var path = require('path');
 async function saveMessage(data) {
   let dbData = {message: JSON.stringify(data.message), sender: data.sender_id, receiver: data.receiver_id};
   let result = messageController.create(dbData);
-  console.log('I am calling second');
   if (!result.ok) {
     console.log('ERROR INSIDE saveMessage', result.error);
   }

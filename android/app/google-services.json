@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "388473744387",
+    "firebase_url": "https://online-dating-f7326.firebaseio.com",
+    "project_id": "online-dating-f7326",
+    "storage_bucket": "online-dating-f7326.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388473744387:android:954f273d7aea3840d83236",
+        "android_client_info": {
+          "package_name": "com.webrtcmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "388473744387-me2ddd19bihhrec88a8sjkqejjfga458.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBS3JZjpQdRhL9qOLbTPpqVBE3ph8ce_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "388473744387-me2ddd19bihhrec88a8sjkqejjfga458.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

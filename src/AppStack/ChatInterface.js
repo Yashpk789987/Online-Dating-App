@@ -199,7 +199,7 @@ export default class ChatInterface extends React.Component {
               numColumns={8}
               emojiFontSize={30}
               onEmojiSelected={emoji => {
-                this.setState(previousState => ({text: previousState.text + '  ' + emoji.char}));
+                this.setState(previousState => ({text: previousState.text + '' + emoji.char}));
               }}
             />
           </Container>
