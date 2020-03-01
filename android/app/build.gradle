@@ -210,6 +210,10 @@ dependencies {
     implementation 'com.facebook.fresco:animated-gif:2.0.0'
     implementation 'com.facebook.fresco:animated-webp:0.11.0'
     implementation 'com.facebook.fresco:webpsupport:0.11.0'
+    implementation "com.google.android.gms:play-services-base:16.1.0"
+    implementation "com.google.firebase:firebase-core:17.0.1"
+    implementation "com.google.firebase:firebase-messaging:19.0.1"
+    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':WebRTCModule')
 
@@ -232,4 +236,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-apply plugin: 'com.google.gms.google-services'
+apply plugin: "com.google.gms.google-services"

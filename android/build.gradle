@@ -2,10 +2,8 @@
 
 buildscript {
     ext {
-        googlePlayServicesVersion = "+" 
-        firebaseVersion = "+" 
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16  // from 21 to 16 changed
+        minSdkVersion = 21  // from 21 to 16 changed
         supportLibVersion = "28.0.3"
         compileSdkVersion = 28
         targetSdkVersion = 28
@@ -17,7 +15,7 @@ buildscript {
     dependencies {
         // classpath 'com.android.tools.build:gradle:3.5.0'
         classpath("com.android.tools.build:gradle:3.4.1")
-        classpath 'com.google.gms:google-services:4.2.0'
+        classpath 'com.google.gms:google-services:4.3.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -34,7 +32,6 @@ allprojects {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
         }
-
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
