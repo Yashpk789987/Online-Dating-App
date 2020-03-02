@@ -1,39 +1,3 @@
-// import React from 'react';
-// import TabScreens from '../TabScreens';
-// import PlaceDetail from './PlaceDetail';
-// import ChatInterface from './ChatInterface';
-// import ViewProfile from './ViewProfile';
-// import {createStackNavigator} from 'react-navigation-stack';
-// import {createAppContainer} from 'react-navigation';
-
-// const App = createAppContainer(
-//   createStackNavigator(
-//     {
-//       Home: {
-//         screen: TabScreens,
-//       },
-//       PlaceDetail: {
-//         screen: PlaceDetail,
-//       },
-//       ChatInterface: {
-//         screen: ChatInterface,
-//       },
-//       ViewProfile: {
-//         screen: ViewProfile,
-//       },
-//     },
-//     {
-//       headerMode: 'none',
-//     },
-//   ),
-// );
-
-// export default class AppStack extends React.Component {
-//   render() {
-//     return <App screenProps={{...this.props, authRef: this.props.navigation}} />;
-//   }
-// }
-
 import firebase from 'react-native-firebase';
 
 import React from 'react';
@@ -44,6 +8,7 @@ import ViewProfile from './ViewProfile';
 import {Alert} from 'react-native';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
+import type {Notification} from 'react-native-firebase';
 
 const App = createAppContainer(
   createStackNavigator(
@@ -102,8 +67,19 @@ export default class AppStack extends React.Component {
   };
 
   messageListener = async () => {
-    this.notificationListener = firebase.notifications().onNotification(notification => {
+    this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
       const {title, body} = notification;
+      console.log('NHU', notification);
+      const localNotification = new firebase.notifications.Notification({
+        sound: 'default',
+        show_in_foreground: true,
+      });
+      localNotification.android.setChannelId('6327637');
+      firebase
+        .notifications()
+        .displayNotification(localNotification)
+        .catch(err => console.error(err));
+
       this.showAlert(title, body);
     });
 

@@ -13,6 +13,7 @@
     "cookie-parser": "^1.4.4",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
+    "fcm-node": "^1.5.2",
     "forever": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",

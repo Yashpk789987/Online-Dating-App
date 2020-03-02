@@ -4,8 +4,54 @@ var cookieParser = require('cookie-parser');
 
 var models = require('./models');
 var messageController = require('./controllers/message');
+var userController = require('./controllers/message');
 var app = express();
 var path = require('path');
+var FCM = require('fcm-node');
+var serverKey =
+  'AAAAWnLW7AM:APA91bEFnJ2MpEOnJIu8zCAO2jjwxu_wAs5YJ-4ZxRP4t7YL2e01FUlfkEMI1iN96bdowOEIqo126_e8DYIJxLOjwIW7dP9PcyYMUeqktOyG02joxvd-2atB090koJQ11f9n04HpUQF-';
+var fcm = new FCM(serverKey);
+
+////    PUSH NOTIFICATION /////////
+
+async function notify(token) {
+  var message = {
+    to:
+      'fVUcmdqrCfQ:APA91bH6IzLT0Lt3gW9XUl_GgWB68vyS9wi6vt-ZCfZozpSTBccXLkMPvUrCFzXZU_NpRySkHmNNyQGAAjWtTBb8rwIFkH4d7gVQSoHlyS4KWHHx5y3sa9VTjw0mGEEKoENeoTXtlApt',
+    notification: {
+      title: 'Title of your push notification',
+      body: 'Body of your push notification',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3MiAmA8IvIhKxDnFCTgzjGcutJDkx0SsP-1gJ6mgdL4_KJ01ayg&s',
+    },
+
+    data: {
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3MiAmA8IvIhKxDnFCTgzjGcutJDkx0SsP-1gJ6mgdL4_KJ01ayg&s',
+      my_key: 'my value',
+      my_another_key: 'my another value',
+    },
+  };
+  try {
+    let response = await fcm.send(message);
+    console.log(response);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function findToken(receiverId) {
+  let result = await userController.findTokenByUserId(receiverId);
+  if (result.ok) {
+    return result.token;
+  } else {
+    return null;
+  }
+}
+
+///// PUSH NOTIFICATION /////////
 
 //////// SAVING MESSAGE  ASYNC ////////
 

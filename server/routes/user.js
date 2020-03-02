@@ -49,4 +49,6 @@ router.get('/user-by-id/:userId', userController.findById);
 
 router.get('/photos/:userId', userController.allPhotos);
 
+router.get('/update-token', userController.updateToken);
+
 module.exports = router;

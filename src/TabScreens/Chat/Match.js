@@ -130,6 +130,7 @@ export default class Match extends React.Component {
 
   componentDidMount = async () => {
     this.setState({loading: true});
+
     let result = await getDataFromToken();
     if (result.ok) {
       await this.setState({loading: false, user_id: result.data.id});

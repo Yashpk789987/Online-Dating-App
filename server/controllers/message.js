@@ -27,6 +27,7 @@ exports.findAllBySenderAndReceiverId = async function(req, res) {
     );
     res.json({ok: true, messages: messages});
   } catch (error) {
+    res.json({ok: false, messages: [], error});
     console.log(error);
   }
 };

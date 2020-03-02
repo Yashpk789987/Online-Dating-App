@@ -94,3 +94,22 @@ exports.allPhotos = async function(req, res) {
     res.json({ok: false, photos: [], error});
   }
 };
+
+exports.findTokenByUserId = async function(userId) {
+  try {
+    let user = await models.User.findById(userId);
+    return {ok: true, token: user.token};
+  } catch (error) {
+    return {ok: false, token: '', error};
+  }
+};
+
+exports.updateToken = async function(req, res) {
+  try {
+    let {userId, token} = req.body;
+    await models.User.update({token: token}, {where: {id: userId}});
+    return {ok: true, code: 'token_updated'};
+  } catch (error) {
+    return {ok: false, error};
+  }
+};

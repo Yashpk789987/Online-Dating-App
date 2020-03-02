@@ -81,6 +81,9 @@ module.exports = (sequelize, DataTypes) => {
           msg: `Location Cannot be null`,
         },
       },
+      token: {
+        type: DataTypes.STRING,
+      },
     },
     {
       hooks: {

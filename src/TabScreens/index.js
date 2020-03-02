@@ -111,8 +111,6 @@ export default class App extends React.Component {
     const {user_id, username, user} = this.state;
     ///////// Connection To IO Server ////////////
     this.socket = io(baseurl, {query: `user_id=${user_id}&username=${username}&user=${JSON.stringify(user)}`});
-    //this.socket = io('https://video-chat-pk2128.herokuapp.com', {query: `user_id=${user_id}&username=${username}`});
-
     //////// Receiving List of all already connected users on new connection
     this.socket.on(
       'self-acknowledge',
