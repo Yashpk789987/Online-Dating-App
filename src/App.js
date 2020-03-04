@@ -53,6 +53,7 @@ export default class App extends React.Component {
 
   componentDidMount = async () => {
     this.askPermissions();
+    //RNCallKeep.displayIncomingCall('uuid', 'Peter2128', 'Peter2128');
     const channel = new firebase.notifications.Android.Channel(
       'test-channel',
       'Test Channel',

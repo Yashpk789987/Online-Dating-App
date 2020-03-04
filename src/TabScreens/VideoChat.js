@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import InCallManager from 'react-native-incall-manager';
+import baseurl from '../helpers/baseurl';
 import io from 'socket.io-client';
 import {View, SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {
@@ -107,6 +108,17 @@ export default class VideoChat extends React.Component {
       }.bind(this),
     );
 
+    this.socket.on(
+      'on-acknowledge-call',
+      function(data) {
+        if (data.code === 'accepted') {
+          this.createOffer(data.socket);
+        } else {
+          alert('User Rejected Your Call');
+        }
+      }.bind(this),
+    );
+
     this.pc.onaddstream = e => {
       InCallManager.start({media: 'video'});
       InCallManager.setSpeakerphoneOn(true);
@@ -132,9 +144,30 @@ export default class VideoChat extends React.Component {
 
   onDestroyCall = () => {
     try {
-      this.setState({remoteVideo: false, localVideo: false, remoteStream: '', localStream: ''});
+      this.state.localStream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+      this.state.remoteStream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+
+      this.pc.removeStream(this.state.remoteStream);
+      this.pc.removeStream(this.state.localStream);
       this.pc.close();
+      this.pc = null;
+      this.pc = undefined;
+      this.setState({
+        remoteVideo: false,
+        localVideo: false,
+        remoteStream: '',
+        localStream: '',
+        answersFrom: {},
+        targetSocketId: '',
+      });
       InCallManager.stop();
+      const configuration = {iceServers: [{url: 'stun:stun.l.google.com:19302'}]};
+      this.pc = new RTCPeerConnection(configuration);
+      this.startLocalStream();
       ////// EMIT SOCKET FOR DISCONNECTING CALL  ///////
       this.socket.emit('disconnect-call', {
         to: this.state.targetSocketId,
@@ -144,6 +177,15 @@ export default class VideoChat extends React.Component {
     } catch (error) {
       console.log('ERROR DESTROY CALL', error);
     }
+  };
+
+  //this.createOffer(item.socket_id)
+
+  makeCallRequest = async (id, info) => {
+    this.socket.emit('call-request', {
+      to: id,
+      info: info,
+    });
   };
 
   render() {
@@ -173,7 +215,7 @@ export default class VideoChat extends React.Component {
                 return (
                   <ListItem thumbnail>
                     <Left>
-                      <Thumbnail source={require('../../images/g5.jpg')} />
+                      <Thumbnail source={{uri: `${baseurl}/user_images/${item.info.profile_pic}`}} />
                     </Left>
                     <Body style={{width: '50%', flex: 1, flexDirection: 'row'}}>
                       <Text style={{color: 'white', fontSize: 16}}>{item.username + '  '}</Text>
@@ -181,7 +223,7 @@ export default class VideoChat extends React.Component {
                     </Body>
 
                     <Right>
-                      <TouchableOpacity onPress={() => this.createOffer(item.socket_id)}>
+                      <TouchableOpacity onPress={() => this.makeCallRequest(item.socket_id, item.info)}>
                         <Icon name="videocam" />
                       </TouchableOpacity>
                     </Right>

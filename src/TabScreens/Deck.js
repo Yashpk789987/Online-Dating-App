@@ -17,13 +17,26 @@ import {
   cardBody,
 } from 'native-base';
 
-import {ScrollView, StyleSheet, Text, View, Dimensions, Animated, PanResponder, TouchableOpacity} from 'react-native';
+import ImageLoad from 'react-native-image-placeholder';
+
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Animated,
+  PanResponder,
+  TouchableOpacity,
+  TouchableHighlight,
+} from 'react-native';
 import {getData, postData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
 import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
 import DeckCard from '../DumbComponents/DeckCard';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import baseurl from '../helpers/baseurl';
 import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -31,8 +44,8 @@ SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.35;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class Deck extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.position = new Animated.ValueXY();
     this.state = {
@@ -40,6 +53,9 @@ export default class Deck extends React.Component {
       users: [],
       loading: false,
       userId: -1,
+      modal: false,
+      targetSocketId: -1,
+      caller_info: {},
     };
   }
 
@@ -63,6 +79,30 @@ export default class Deck extends React.Component {
   componentDidMount = async () => {
     let userId = await this.loadUsers();
     await this.setState({userId, loading: false});
+    this.socket = this.props.screenProps.socketRef;
+    this.socket.on(
+      'on-call-request',
+      async function(data) {
+        await this.setState({modal: true, targetSocketId: data.socket, caller_info: data.info});
+      }.bind(this),
+    );
+  };
+
+  acceptCall = () => {
+    this.socket.emit('acknowledge-call', {
+      to: this.state.targetSocketId,
+      code: 'accepted',
+    });
+    this.setState({modal: false, targetSocketId: -1, caller_info: {}});
+    this.props.navigation.navigate('VideoChat');
+  };
+
+  rejectCall = () => {
+    this.socket.emit('acknowledge-call', {
+      to: this.state.targetSocketId,
+      code: 'rejected',
+    });
+    this.setState({modal: false, targetSocketId: -1});
   };
 
   renderUsers = () => {
@@ -92,6 +132,53 @@ export default class Deck extends React.Component {
   render() {
     return (
       <Container>
+        <Modal animationType="slide" transparent={false} visible={this.state.modal}>
+          <Container style={{backgroundColor: 'white'}}>
+            <View style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
+              <ImageLoad
+                source={{uri: `${baseurl}/user_images/${this.state.caller_info.profile_pic}`}}
+                style={{width: 200, height: 200, borderRadius: 100}}
+              />
+              <Text style={{fontSize: 40}}>{this.state.caller_info.username}</Text>
+              <Text style={{fontSize: 20}}>Is Calling You ...</Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
+              <TouchableOpacity
+                style={{
+                  borderWidth: 1,
+                  borderColor: 'rgba(0,0,0,0.2)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 100,
+                  height: 100,
+                  backgroundColor: 'green',
+                  borderRadius: 50,
+                }}
+                onPress={() => {
+                  this.acceptCall();
+                }}>
+                <Icon name={'md-checkmark'} size={60} color="white" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  borderWidth: 1,
+                  borderColor: 'rgba(0,0,0,0.2)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 100,
+                  height: 100,
+                  backgroundColor: 'red',
+                  borderRadius: 50,
+                }}
+                onPress={() => {
+                  this.rejectCall();
+                }}>
+                <Icon name={'md-close'} size={60} color="white" />
+              </TouchableOpacity>
+            </View>
+          </Container>
+        </Modal>
         <Header searchBar rounded>
           <Body>
             <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>

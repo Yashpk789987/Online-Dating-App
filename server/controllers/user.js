@@ -110,7 +110,6 @@ exports.updateToken = async function(req, res) {
     await models.sequelize.query(`update users set token = '${token}' where id = ${parseInt(userId)}`);
     let user = await models.User.findOne({where: {token: token}});
     var jwt_token = await jwt.sign(user.dataValues, 'Reactnative@2018', {expiresIn: '30d'});
-    console.log(user);
     res.json({ok: true, token: jwt_token});
   } catch (error) {
     console.log(error);

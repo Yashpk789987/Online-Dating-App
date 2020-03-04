@@ -160,6 +160,8 @@ io.on('connection', socket => {
     users: socketsArray,
   });
 
+  console.log(socketsArray);
+
   socket.on('disconnect', () => {
     let index = socketsArray
       .map(function(d) {
@@ -196,7 +198,22 @@ io.on('connection', socket => {
     });
   });
   /////////   FOR DISCONECTING CALL /////////////////
-
+  /////////   FOR  CALL  REQUEST  ///////////////////
+  socket.on('call-request', function(data) {
+    console.log('call-request', data);
+    socket.to(data.to).emit('on-call-request', {
+      socket: socket.id,
+      info: data.info,
+    });
+  });
+  socket.on('acknowledge-call', function(data) {
+    console.log('acknowledge-call', data);
+    socket.to(data.to).emit('on-acknowledge-call', {
+      socket: socket.id,
+      code: data.code,
+    });
+  });
+  /////////   FOR  CALL  REQUEST  ///////////////////
   ////// FOR REAL TIME CHAT MESSAGING ///////////////
   socket.on('send-chat-message', async function(data) {
     saveMessage(data);
