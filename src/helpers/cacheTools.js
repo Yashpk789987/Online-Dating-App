@@ -23,11 +23,10 @@ const putInCache = async (key, value) => {
   }
 };
 
-const changeInCache = async (key, obj, newValue) => {
-  if (key && obj && newValue) return false;
+const changeInCache = async (key, newValue) => {
+  if (!(key && newValue)) return false;
   try {
-    let change = {...obj, ...newValue};
-    await AsyncStorage.setItem(key, JSON.stringify(change));
+    await AsyncStorage.setItem(key, JSON.stringify(newValue));
     return true;
   } catch (e) {
     console.log('Async Service change', e);

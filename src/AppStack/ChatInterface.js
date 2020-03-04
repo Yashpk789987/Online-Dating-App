@@ -26,15 +26,26 @@ export default class ChatInterface extends React.Component {
     search_results: [],
     text: '',
     user: {},
+    loading: false,
+    sender: {},
   };
 
   componentDidMount = async () => {
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
     const user = this.props.navigation.getParam('user');
+    const sender = this.props.navigation.getParam('sender');
     const user_id = this.props.navigation.getParam('user_id');
-    const {profile_id, username} = user;
+    const {username} = user;
+    const profile_id = user.profile_id || user.id;
     this.socket = this.props.navigation.getParam('socketRef');
-    await this.setState({query: 'Trending Gifs', name: username, profile_id: profile_id, user_id: user_id, user});
+    await this.setState({
+      query: 'Trending Gifs',
+      name: username,
+      profile_id: profile_id,
+      user_id: user_id,
+      user,
+      sender: sender,
+    });
     this.joinRoom();
     this.loadMessages();
     this.searchGifs();
@@ -67,6 +78,7 @@ export default class ChatInterface extends React.Component {
 
   loadMessages = async () => {
     try {
+      this.setState({loading: true});
       let {user_id, profile_id} = this.state;
       let result = await getData(`message/get-all-messages/${user_id}/${profile_id}`);
       if (result.ok) {
@@ -75,7 +87,7 @@ export default class ChatInterface extends React.Component {
           let message = JSON.parse(result.messages[index].message);
           messages.push(message);
         }
-        this.setState({messages: messages});
+        this.setState({messages: messages, loading: false});
       } else {
       }
     } catch (error) {
@@ -117,6 +129,7 @@ export default class ChatInterface extends React.Component {
         image: url,
         user: {
           _id: this.state.user_id,
+          name: this.state.sender.username,
         },
       },
     ];
@@ -133,6 +146,7 @@ export default class ChatInterface extends React.Component {
       room_name: `${this.state.user_id}-${this.state.profile_id}`,
       message: message,
       user: this.state.user,
+      sender: this.state.sender,
       sender_id: this.state.user_id,
       receiver_id: this.state.profile_id,
     };
@@ -185,17 +199,22 @@ export default class ChatInterface extends React.Component {
         <GiftedChat
           text={this.state.text}
           messages={this.state.messages}
+          loadEarlier={true}
+          onLoadEarlier={this.loadMessages}
+          isLoadingEarlier={this.state.loading}
           onInputTextChanged={text => this.setState({text})}
           onSend={messages => this.onSend(messages)}
           renderActions={this.renderInput}
           user={{
             _id: this.state.user_id,
+            name: this.state.sender.username,
           }}
         />
 
         {this.state.emoji_modal ? (
           <Container style={{flex: 1}}>
             <EmojiInput
+              renderAheadOffset={200}
               numColumns={8}
               emojiFontSize={30}
               onEmojiSelected={emoji => {

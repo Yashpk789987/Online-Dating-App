@@ -5,7 +5,6 @@ exports.create = async function(data) {
     let result = await models.Message.create(data);
     return {ok: true};
   } catch (error) {
-    console.log(error);
     return {ok: false, error};
   }
 };

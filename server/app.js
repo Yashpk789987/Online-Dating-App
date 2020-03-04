@@ -7,37 +7,41 @@ var messageController = require('./controllers/message');
 var userController = require('./controllers/message');
 var app = express();
 var path = require('path');
-var FCM = require('fcm-node');
-var serverKey =
-  'AAAAWnLW7AM:APA91bEFnJ2MpEOnJIu8zCAO2jjwxu_wAs5YJ-4ZxRP4t7YL2e01FUlfkEMI1iN96bdowOEIqo126_e8DYIJxLOjwIW7dP9PcyYMUeqktOyG02joxvd-2atB090koJQ11f9n04HpUQF-';
-var fcm = new FCM(serverKey);
+var serviceAccount = require('./public/firebase-admin.json');
+var admin = require('firebase-admin');
+var baseurl = 'http://192.168.43.21:3000';
 
-////    PUSH NOTIFICATION /////////
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://online-dating-f7326.firebaseio.com',
+});
 
-async function notify(token) {
+async function notify(token, sender_name, sender_image, message, object) {
   var message = {
-    to:
-      'fVUcmdqrCfQ:APA91bH6IzLT0Lt3gW9XUl_GgWB68vyS9wi6vt-ZCfZozpSTBccXLkMPvUrCFzXZU_NpRySkHmNNyQGAAjWtTBb8rwIFkH4d7gVQSoHlyS4KWHHx5y3sa9VTjw0mGEEKoENeoTXtlApt',
+    token: token,
     notification: {
-      title: 'Title of your push notification',
-      body: 'Body of your push notification',
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3MiAmA8IvIhKxDnFCTgzjGcutJDkx0SsP-1gJ6mgdL4_KJ01ayg&s',
+      title: sender_name,
+      body: message,
     },
-
+    android: {
+      notification: {
+        image: `${baseurl}/user_images/${sender_image}`,
+        local_only: true,
+        default_vibrate_timings: true,
+        channel_id: 'test-channel',
+      },
+    },
     data: {
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3MiAmA8IvIhKxDnFCTgzjGcutJDkx0SsP-1gJ6mgdL4_KJ01ayg&s',
-      my_key: 'my value',
-      my_another_key: 'my another value',
+      user: JSON.stringify(object),
     },
   };
+
   try {
-    let response = await fcm.send(message);
-    console.log(response);
+    let response = await admin.messaging().send(message);
+    console.log('response ::', response);
     return true;
   } catch (error) {
-    console.log(error);
+    console.log('notify ::', error);
     return false;
   }
 }
@@ -59,7 +63,7 @@ async function saveMessage(data) {
   let dbData = {message: JSON.stringify(data.message), sender: data.sender_id, receiver: data.receiver_id};
   let result = messageController.create(dbData);
   if (!result.ok) {
-    console.log('ERROR INSIDE saveMessage', result.error);
+    //console.log('ERROR INSIDE saveMessage', result.error);
   }
 }
 
@@ -91,12 +95,14 @@ app.use('/like', likeRouter);
 app.use('/message', messageRouter);
 /////// USING ROUTES /////
 
-app.get('/', function(req, res) {
-  res.render('chat');
+app.get('/push', async function(req, res) {
+  let result = await notify();
+  res.json({code: result});
 });
 
-app.get('/connect', function(req, res) {
-  res.json({connected: 'true'});
+app.get('/connect', async function(req, res) {
+  let users = await models.User.findAll();
+  res.json({connected: 'true', users: users});
 });
 
 var server = require('http').createServer(app);
@@ -162,7 +168,7 @@ io.on('connection', socket => {
       .indexOf(socket.id);
     socketsArray.splice(index, 1);
     io.emit('remove-user', {users: socketsArray});
-    console.log('After Disconnect', socketsArray);
+    //console.log('After Disconnect', socketsArray);
   });
 
   //////////// OFFER LISTENER //////////////
@@ -176,7 +182,7 @@ io.on('connection', socket => {
   /////////// OFFER LISTENER //////////////
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   socket.on('make-answer', function(data) {
-    console.log('make answer ');
+    //console.log('make answer ');
     socket.to(data.to).emit('answer-made', {
       socket: socket.id,
       answer: data.answer,
@@ -192,9 +198,12 @@ io.on('connection', socket => {
   /////////   FOR DISCONECTING CALL /////////////////
 
   ////// FOR REAL TIME CHAT MESSAGING ///////////////
-  socket.on('send-chat-message', function(data) {
+  socket.on('send-chat-message', async function(data) {
     saveMessage(data);
     let result = findChatRoom(data.room_name);
+    if (io.sockets.adapter.rooms[result.room].length === 1) {
+      await notify(data.user.token, data.sender.username, data.sender.profile_pic, data.message.text, data.sender);
+    }
     if (result.ok) {
       socket.to(result.room).emit('receive-message', {
         message: data.message,
@@ -211,7 +220,7 @@ io.on('connection', socket => {
     } else {
       socket.join(data.room_name);
     }
-    console.log('all rooms', io.sockets.adapter.rooms);
+    ////console.log('all rooms', io.sockets.adapter.rooms);
   });
   socket.on('leave-room', function(data) {
     let result = findChatRoom(data.room_name);
@@ -219,19 +228,7 @@ io.on('connection', socket => {
     if (result.ok) {
       socket.leave(result.room);
     }
-    console.log('all rooms', io.sockets.adapter.rooms);
+    ////console.log('all rooms', io.sockets.adapter.rooms);
   });
   //// FOR JOINING AND LEAVING ROOM //////////
 });
-
-// var fs = require('fs');
-// var filePath = __dirname + '/public/user_images/1055cf79d446364be4c6cec8c6eb3790';
-// fs.unlinkSync(filePath);
-
-// socket.on('send-chat-message', function(data) {
-//     saveMessage(data);
-//     socket.to(data.user.socket_id).emit('receive-message', {
-//       socket: socket.id,
-//       message: data.message,
-//     });
-//   });

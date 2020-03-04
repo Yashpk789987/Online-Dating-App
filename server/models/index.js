@@ -13,6 +13,7 @@ const sequelize = new Sequelize('online-dating', 'root', '', {
   define: {
     underscored: true,
   },
+  logging: false,
 });
 
 const models = {

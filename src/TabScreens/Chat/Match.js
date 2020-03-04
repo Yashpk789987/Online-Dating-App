@@ -125,6 +125,7 @@ export default class Match extends React.Component {
       matches: [],
       loading: false,
       user_id: -1,
+      sender: {},
     };
   }
 
@@ -133,7 +134,7 @@ export default class Match extends React.Component {
 
     let result = await getDataFromToken();
     if (result.ok) {
-      await this.setState({loading: false, user_id: result.data.id});
+      await this.setState({loading: false, user_id: result.data.id, sender: result.data});
       await this.loadMatches();
     } else {
       alert('Session Expired. PLease Login again');
@@ -189,6 +190,7 @@ export default class Match extends React.Component {
     this.props.screenProps.stackRef.navigate('ChatInterface', {
       user: item,
       user_id: this.state.user_id,
+      sender: this.state.sender,
       socketRef: this.props.screenProps.socketRef,
     });
   };

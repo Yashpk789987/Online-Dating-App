@@ -98,18 +98,22 @@ exports.allPhotos = async function(req, res) {
 exports.findTokenByUserId = async function(userId) {
   try {
     let user = await models.User.findById(userId);
-    return {ok: true, token: user.token};
+    res.json({ok: true, token: user.token});
   } catch (error) {
-    return {ok: false, token: '', error};
+    res.json({ok: false, token: '', error});
   }
 };
 
 exports.updateToken = async function(req, res) {
   try {
     let {userId, token} = req.body;
-    await models.User.update({token: token}, {where: {id: userId}});
-    return {ok: true, code: 'token_updated'};
+    await models.sequelize.query(`update users set token = '${token}' where id = ${parseInt(userId)}`);
+    let user = await models.User.findOne({where: {token: token}});
+    var jwt_token = await jwt.sign(user.dataValues, 'Reactnative@2018', {expiresIn: '30d'});
+    console.log(user);
+    res.json({ok: true, token: jwt_token});
   } catch (error) {
-    return {ok: false, error};
+    console.log(error);
+    res.json({ok: false, error});
   }
 };

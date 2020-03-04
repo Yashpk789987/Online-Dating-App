@@ -13,8 +13,10 @@ import io from 'socket.io-client';
 import InCallManager from 'react-native-incall-manager';
 import RNCallKeep from 'react-native-callkeep';
 import {getDataFromToken} from '../helpers/tokenutils';
-import {removeFromCache} from '../helpers/cacheTools';
+import {removeFromCache, changeInCache} from '../helpers/cacheTools';
 import baseurl from '../helpers/baseurl';
+import firebase from 'react-native-firebase';
+import {postData} from '../helpers/httpServices';
 
 const options = {
   android: {
@@ -85,6 +87,10 @@ export default class App extends React.Component {
     username: '',
     targetUser: {},
     user: {},
+    connected_to_io: false,
+    go_to_chat_interface: false,
+    notification_object: {},
+    sender: {},
   };
 
   makeCall = async user => {
@@ -108,9 +114,13 @@ export default class App extends React.Component {
       this.props.screenProps.authRef.navigate('AuthLoading');
       return;
     }
+
     const {user_id, username, user} = this.state;
+    await this.checkPermission();
+    await this.messageListener();
     ///////// Connection To IO Server ////////////
     this.socket = io(baseurl, {query: `user_id=${user_id}&username=${username}&user=${JSON.stringify(user)}`});
+    this.setState({connected_to_io: true});
     //////// Receiving List of all already connected users on new connection
     this.socket.on(
       'self-acknowledge',
@@ -136,6 +146,81 @@ export default class App extends React.Component {
     );
   };
 
+  checkPermission = async () => {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this.getFcmToken();
+    } else {
+      this.requestPermission();
+    }
+  };
+
+  getFcmToken = async () => {
+    const fcmToken = await firebase.messaging().getToken();
+    if (fcmToken) {
+      let data = {userId: this.state.user_id, token: fcmToken};
+      let result = await postData('user/update-token', data);
+      if (result.ok) {
+        await changeInCache('token', result.token);
+        let result_ = await getDataFromToken();
+        if (result_.ok) {
+          const {id, username} = result_.data;
+          await this.setState({user_id: id, username, user: result_.data});
+        } else {
+          await removeFromCache('token');
+          this.props.screenProps.authRef.navigate('AuthLoading');
+          return;
+        }
+      }
+    } else {
+      this.showAlert('Failed', 'No token received');
+    }
+  };
+
+  requestPermission = async () => {
+    try {
+      await firebase.messaging().requestPermission();
+      // User has authorised
+    } catch (error) {
+      // User has rejected permissions
+    }
+  };
+
+  messageListener = async () => {
+    this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+      console.log('notification', notification);
+      const local = new firebase.notifications.Notification()
+        .setNotificationId(notification.notificationId)
+        .setTitle(notification.title)
+        .setSubtitle('New Message')
+        .android.setLargeIcon(notification.android.largeIcon)
+        .setBody(notification.body)
+        .setData({
+          user: notification.data.user,
+        });
+
+      local.android.setChannelId(notification.android.channelId).android.setSmallIcon('ic_launcher');
+
+      // Display the notification
+      firebase.notifications().displayNotification(local);
+    });
+
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async notificationOpen => {
+      if (notificationOpen) {
+        await this.setState({go_to_chat_interface: true, notification_object: notificationOpen});
+      }
+    });
+
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+      await this.setState({go_to_chat_interface: true, notification_object: notificationOpen});
+    }
+
+    this.messageListener = firebase.messaging().onMessage(message => {
+      console.log(JSON.stringify(message));
+    });
+  };
+
   render() {
     const data = Object.assign({
       users: this.state.users,
@@ -144,6 +229,15 @@ export default class App extends React.Component {
       stackRef: this.props.navigation,
       authRef: this.props.screenProps.authRef,
     });
+    if (this.state.go_to_chat_interface && this.state.connected_to_io) {
+      let {user} = this.state.notification_object.notification.data;
+      this.props.navigation.navigate('ChatInterface', {
+        sender: this.state.user,
+        user: JSON.parse(user),
+        user_id: this.state.user_id,
+        socketRef: this.socket,
+      });
+    }
     return (
       <Container>
         <BottomTab screenProps={data} />

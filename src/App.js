@@ -20,6 +20,7 @@ import VideoChatPack from './VideoChatPack';
 import Main from './components/Main';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 import {PermissionsAndroid} from 'react-native';
+import firebase from 'react-native-firebase';
 
 console.disableYellowBox = true;
 
@@ -52,6 +53,12 @@ export default class App extends React.Component {
 
   componentDidMount = async () => {
     this.askPermissions();
+    const channel = new firebase.notifications.Android.Channel(
+      'test-channel',
+      'Test Channel',
+      firebase.notifications.Android.Importance.Max,
+    ).setDescription('My apps test channel');
+    firebase.notifications().android.createChannel(channel);
   };
 
   render() {

@@ -36,7 +36,7 @@ exports.findInfoByProfileId = async function(req, res) {
 exports.loadMatchesForProfile = async function(req, res) {
   try {
     let profileId = req.params.profileId;
-    let query = `SELECT l.id as like_id , l.like_back , l.dislike_back , p.username AS username, p.id AS profile_id, p.profile_pic AS profile_pic FROM likes AS l, users AS p WHERE l.profile_id = p.id AND l.user_id  = ${profileId}  AND l.like_back = 1 AND l.dislike_back = 0`;
+    let query = `SELECT l.id as like_id , l.like_back , l.dislike_back , p.username AS username, p.id AS profile_id, p.profile_pic AS profile_pic , p.token FROM likes AS l, users AS p WHERE l.profile_id = p.id AND l.user_id  = ${profileId}  AND l.like_back = 1 AND l.dislike_back = 0`;
 
     let matches = await models.sequelize.query(query, {
       replacements: [profileId],
@@ -50,7 +50,6 @@ exports.loadMatchesForProfile = async function(req, res) {
 };
 
 exports.updateLikeStatus = async function(req, res) {
-  console.log('updateLikeStatus', req.body);
   try {
     if (req.body.like_back === true) {
       let {like_back, user_id, profile_id, id} = req.body;

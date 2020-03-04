@@ -29,10 +29,14 @@ export default function SignUp(props) {
   };
 
   useEffect(() => {
-    Geolocation.getCurrentPosition(async info => {
-      let {latitude, longitude} = info.coords;
-      await setState(prevState => ({...prevState, latitude: latitude, longitude: longitude}));
-    });
+    Geolocation.getCurrentPosition(
+      async info => {
+        let {latitude, longitude} = info.coords;
+        await setState(prevState => ({...prevState, latitude: latitude, longitude: longitude}));
+      },
+      error => console.log('error', error),
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 10000},
+    );
   }, []);
 
   async function doSignUp() {
