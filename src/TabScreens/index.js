@@ -188,11 +188,11 @@ export default class App extends React.Component {
 
   messageListener = async () => {
     this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
-      console.log('notification', notification);
       const local = new firebase.notifications.Notification()
         .setNotificationId(notification.notificationId)
         .setTitle(notification.title)
         .setSubtitle('New Message')
+        .setSound('default')
         .android.setLargeIcon(notification.android.largeIcon)
         .setBody(notification.body)
         .setData({
@@ -200,8 +200,6 @@ export default class App extends React.Component {
         });
 
       local.android.setChannelId(notification.android.channelId).android.setSmallIcon('ic_launcher');
-
-      // Display the notification
       firebase.notifications().displayNotification(local);
     });
 

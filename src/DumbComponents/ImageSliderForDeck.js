@@ -24,25 +24,27 @@ let SCREEN_HEIGHT = Dimensions.get('window').height;
 SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.45;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default class ImageSliderForDeck extends React.Component {
-  state = {
-    loading: false,
-    images: [],
-  };
-  componentDidMount = async () => {
-    this.setState({loading: true});
-    let response = await getData(`user/photos/${this.props.userId}`);
-    if (response.ok) {
-      this.setState({loading: false, images: response.photos});
+export default ImageSliderForDeck = ({userId}) => {
+  let [loading, setLoading] = useState(false);
+  let [images, setImages] = useState([]);
+  useEffect(() => {
+    async function loadImages() {
+      setLoading(true);
+      let response = await getData(`user/photos/${userId}`);
+      if (response.ok) {
+        setLoading(false);
+        setImages(response.photos);
+      }
     }
-  };
-  render() {
-    if (this.state.loading) {
-      return <Spinner color="orange" />;
-    }
+    loadImages();
+  }, [userId]);
+
+  if (loading) {
+    return <Spinner color="orange" />;
+  } else {
     return (
       <FlatList
-        data={this.state.images}
+        data={images}
         horizontal={true}
         renderItem={({item}) => {
           return (
@@ -62,4 +64,4 @@ export default class ImageSliderForDeck extends React.Component {
       />
     );
   }
-}
+};

@@ -63,6 +63,7 @@ export default class Deck extends React.Component {
     this.setState({loading: true});
     let result = await getDataFromToken();
     if (result.ok) {
+      console.log('Result : ', result.data);
       let {id} = result.data;
       let response = await getData(`user/all-users-except-self/${id}`);
       await this.setState({users: response.users});

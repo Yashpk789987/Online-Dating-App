@@ -9,7 +9,7 @@ var app = express();
 var path = require('path');
 var serviceAccount = require('./public/firebase-admin.json');
 var admin = require('firebase-admin');
-var baseurl = 'http://192.168.43.21:3000';
+var baseurl = 'https://video-chat-pk2128.herokuapp.com';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -24,8 +24,13 @@ async function notify(token, sender_name, sender_image, message, object) {
       body: message,
     },
     android: {
+      ttl: 0,
+      priority: 'high',
       notification: {
+        notification_priority: 'PRIORITY_MAX',
+        sound: 'default',
         image: `${baseurl}/user_images/${sender_image}`,
+        icon: `${baseurl}/user_images/${sender_image}`,
         local_only: true,
         default_vibrate_timings: true,
         channel_id: 'test-channel',
@@ -118,24 +123,12 @@ server.listen(process.env.PORT || '3000', function() {
 
 function findChatRoom(room_name) {
   let find1 = io.sockets.adapter.rooms[room_name];
-  let find2 =
-    io.sockets.adapter.rooms[
-      room_name
-        .split('')
-        .reverse()
-        .join('')
-    ];
+  let find2 = io.sockets.adapter.rooms[room_name.split('-')[1] + '-' + room_name.split('-')[0]];
 
   if (find1 === undefined && find2 === undefined) {
     return {ok: false};
   } else {
-    let return_room_name =
-      find1 === undefined
-        ? room_name
-            .split('')
-            .reverse()
-            .join('')
-        : room_name;
+    let return_room_name = find1 === undefined ? room_name.split('-')[1] + '-' + room_name.split('-')[0] : room_name;
     return {ok: true, room: return_room_name, room_object: find1 || find2};
   }
 }

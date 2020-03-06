@@ -6,6 +6,7 @@ const Sequelize = require('sequelize');
 //   define: {
 //     underscored: true,
 //   },
+//   logging: false,
 // });
 
 const sequelize = new Sequelize('online-dating', 'root', '', {
@@ -20,7 +21,7 @@ const models = {
   User: sequelize.import('./user'),
   Photo: sequelize.import('./photo'),
   Like: sequelize.import('./like'),
-  Message: sequelize.import('./Message'),
+  Message: sequelize.import('./message'),
 };
 
 Object.keys(models).forEach(modelName => {
