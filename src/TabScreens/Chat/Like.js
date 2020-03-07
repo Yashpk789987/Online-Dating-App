@@ -1,8 +1,8 @@
 import React from 'react';
 import {getData, postData} from '../../helpers/httpServices';
 import {getDataFromToken} from '../../helpers/tokenutils';
-import {FlatList, View, TouchableOpacity, RefreshControl} from 'react-native';
-import {Container, Icon, Text, Spinner, ListItem, Left, Body, Thumbnail, Right} from 'native-base';
+import {FlatList, View, TouchableOpacity, RefreshControl, Keyboard} from 'react-native';
+import {Item, Input, Container, Icon, Text, Spinner, ListItem, Left, Body, Thumbnail, Right} from 'native-base';
 import baseurl from '../../helpers/baseurl';
 
 export default class Like extends React.Component {
@@ -10,9 +10,14 @@ export default class Like extends React.Component {
     user_id: -1,
     loading: false,
     likes: [],
+    searching: false,
+    filteredLikes: [],
   };
 
   componentDidMount = async () => {
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      this.setState({searching: false});
+    });
     this.setState({loading: true});
     let result = await getDataFromToken();
     if (result.ok) {
@@ -31,7 +36,7 @@ export default class Like extends React.Component {
     this.setState({loading: true});
     let result = await getData(`like/find-info-by-profileId/${this.state.user_id}`);
     if (result.ok) {
-      this.setState({likes: result.likes, loading: false});
+      this.setState({likes: result.likes, filteredLikes: result.likes, loading: false});
     }
   };
 
@@ -58,13 +63,25 @@ export default class Like extends React.Component {
     }
   };
 
+  searchLikes = text => {
+    let filteredLikes = this.state.likes.filter(item =>
+      item.username.toLocaleLowerCase().includes(text.toLocaleLowerCase()),
+    );
+    this.setState({filteredLikes: filteredLikes});
+  };
+
+  componentWillUnmount() {
+    this.keyboardDidHideListener.remove();
+  }
+
   renderLikes = () => {
     return (
       <FlatList
+        keyboardShouldPersistTaps="handled"
         refreshControl={<RefreshControl refreshing={this.props.loading} onRefresh={this.loadLikes} />}
-        data={this.state.likes}
+        data={this.state.filteredLikes}
         renderItem={({item}) => (
-          <View style={{marginRight: '2%', marginLeft: '-3%'}}>
+          <View style={{marginTop: '2%', marginRight: '2%', marginLeft: '-3%'}}>
             <ListItem
               onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: item.profile_id})}
               avatar
@@ -133,12 +150,58 @@ export default class Like extends React.Component {
   render() {
     return (
       <Container>
-        <Text style={{color: 'white', marginBottom: '5%', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>
-          Your Likes
-        </Text>
+        {this.state.searching ? (
+          <Item
+            style={{
+              marginTop: '2%',
+              marginRight: '2%',
+              marginLeft: '2%',
+              marginBottom: '4%',
+              height: '10.0%',
+              backgroundColor: 'white',
+            }}
+            rounded>
+            <Icon
+              onPress={() => {
+                this.setState(state => ({filteredMatches: state.matches, searching: false}));
+              }}
+              name="arrow-back"
+              style={{color: 'black', fontSize: 20}}
+            />
+            <Input
+              ref={this.search}
+              onBlur={() => this.setState(state => ({filteredLikes: state.likes, searching: false}))}
+              autoFocus={true}
+              onChangeText={text => this.searchLikes(text)}
+              placeholder="Search"
+              rounded
+            />
+          </Item>
+        ) : (
+          <View style={{flex: 0.2, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+            <Text
+              style={{
+                marginTop: '4%',
+                color: 'white',
+                marginBottom: '5%',
+                padding: '2%',
+                fontSize: 20,
+                fontWeight: 'bold',
+              }}>
+              Your Likes
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                this.setState({searching: true});
+              }}>
+              <Icon name="search" style={{paddingRight: '2%', color: 'white'}} />
+            </TouchableOpacity>
+          </View>
+        )}
+
         {!this.state.loading && this.state.likes.length === 0 ? (
           <View style={{alignText: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 18, color: 'white', fontWeight: 'bold'}}>No Matches To Show...</Text>
+            <Text style={{fontSize: 18, color: 'white', fontWeight: 'bold'}}>No Likes To Show...</Text>
           </View>
         ) : null}
         {this.state.loading ? <Spinner color="white" /> : this.renderLikes()}

@@ -18,6 +18,7 @@ import {
 } from 'native-base';
 
 import ImageLoad from 'react-native-image-placeholder';
+import Autocomplete from 'react-native-autocomplete-input';
 
 import {
   Modal,
@@ -31,6 +32,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from 'react-native';
+
 import {getData, postData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
 import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
@@ -51,6 +53,7 @@ export default class Deck extends React.Component {
     this.state = {
       currentIndex: 0,
       users: [],
+      filteredUsers: [],
       loading: false,
       userId: -1,
       modal: false,
@@ -63,10 +66,9 @@ export default class Deck extends React.Component {
     this.setState({loading: true});
     let result = await getDataFromToken();
     if (result.ok) {
-      console.log('Result : ', result.data);
       let {id} = result.data;
       let response = await getData(`user/all-users-except-self/${id}`);
-      await this.setState({users: response.users});
+      await this.setState({filteredUsers: response.users, users: response.users});
       return id;
     }
   };
@@ -115,7 +117,7 @@ export default class Deck extends React.Component {
         onSwipedRight={index => {
           this.makeLike(index);
         }}>
-        {this.state.users.map((item, index) => {
+        {this.state.filteredUsers.map((item, index) => {
           return (
             <DeckCard
               makeLike={this.makeLike}
@@ -128,6 +130,20 @@ export default class Deck extends React.Component {
         })}
       </CardStack>
     );
+  };
+
+  filterDeck = async text => {
+    if (text === '') {
+      let userId = await this.loadUsers();
+      await this.setState({userId, loading: false});
+    } else {
+      let result = await getData(`user/getUsersByPattern/${text}`);
+      if (result.ok) {
+        this.setState({filteredUsers: result.users});
+      } else {
+        alert('technical error');
+      }
+    }
   };
 
   render() {
@@ -184,7 +200,7 @@ export default class Deck extends React.Component {
           <Body>
             <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
               <Icon_ name="search" style={{color: 'black'}} />
-              <Input placeholder="Search" rounded />
+              <Input placeholder="Search" onChangeText={text => this.filterDeck(text)} rounded />
             </Item>
           </Body>
 

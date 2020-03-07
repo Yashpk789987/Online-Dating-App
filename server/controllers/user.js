@@ -116,3 +116,16 @@ exports.updateToken = async function(req, res) {
     res.json({ok: false, error});
   }
 };
+
+exports.findUsersBySearchPattern = async function(req, res) {
+  try {
+    let searchPattern = req.params.searchPattern;
+    let users = await models.User.findAll({
+      where: {username: {$like: `%${searchPattern}%`}},
+    });
+    res.json({ok: true, users});
+  } catch (error) {
+    console.log('error', error);
+    res.json({ok: false, users: []});
+  }
+};

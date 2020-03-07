@@ -51,4 +51,6 @@ router.get('/photos/:userId', userController.allPhotos);
 
 router.post('/update-token', userController.updateToken);
 
+router.get('/getUsersByPattern/:searchPattern', userController.findUsersBySearchPattern);
+
 module.exports = router;

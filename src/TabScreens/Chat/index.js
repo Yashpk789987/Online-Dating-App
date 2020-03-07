@@ -32,7 +32,7 @@ export default class Chat extends React.Component {
   render() {
     return (
       <Container>
-        <Header searchBar rounded>
+        {/* <Header searchBar rounded>
           <Body>
             <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
               <Icon name="search" style={{color: 'black'}} />
@@ -43,7 +43,7 @@ export default class Chat extends React.Component {
           <Right>
             <Thumbnail small source={require('../../../images/g2.jpg')} />
           </Right>
-        </Header>
+        </Header> */}
         <MaterialTopTabsContainer screenProps={this.props.navigation.getScreenProps()} />
       </Container>
     );
