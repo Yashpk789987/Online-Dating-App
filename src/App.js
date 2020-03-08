@@ -11,7 +11,6 @@ import Deck from './components/Deck';
 import VideoChat from './components/VideoChat';
 import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
 import CallManager from './components/CallManager';
-import VideoCall from './components/VideoCall';
 
 import AppStack from './AppStack';
 import AuthStack from './AuthStack';

@@ -9,6 +9,7 @@ var app = express();
 var path = require('path');
 var serviceAccount = require('./public/firebase-admin.json');
 var admin = require('firebase-admin');
+
 var baseurl = 'https://video-chat-pk2128.herokuapp.com';
 
 admin.initializeApp({

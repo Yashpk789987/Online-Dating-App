@@ -7,6 +7,7 @@ import VideoChat from './VideoChat';
 import Chat from './Chat/index';
 import Deck from './Deck';
 import NearbyLocations from './NearbyLocations';
+import ProfileDrawer from './ProfileDrawer/';
 
 import Profile from './Profile';
 import io from 'socket.io-client';
@@ -53,7 +54,7 @@ const TabNavigator = createBottomTabNavigator(
       },
     },
     Profile: {
-      screen: Profile,
+      screen: ProfileDrawer,
       navigationOptions: {
         tabBarLabel: <></>,
         tabBarIcon: ({tintColor}) => <Icon name="person" style={{color: tintColor}} size={25} />,

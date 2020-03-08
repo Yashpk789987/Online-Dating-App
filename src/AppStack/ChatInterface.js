@@ -5,7 +5,7 @@ import {GiftedChat} from 'react-native-gifted-chat';
 import EmojiInput from 'react-native-emoji-input';
 import {Icon, Input, Item} from 'native-base';
 import {Header, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 'native-base';
-import {Picker} from 'emoji-mart-native';
+
 import searchGifs from '../helpers/searchGifs';
 import GiphySearch from '../components/GiphySearch';
 import {getData} from '../helpers/httpServices';

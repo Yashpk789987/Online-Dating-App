@@ -10,7 +10,6 @@ router.all('/*', async function(req, res, next) {
     var decoded = await jwt.verify(token, 'Reactnative@2018');
     next();
   } catch (err) {
-    console.log(err);
     res.json({ok: false, msg: 'Authentication Failed', code: 'auth_failed'});
   }
 });

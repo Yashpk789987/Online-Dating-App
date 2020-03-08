@@ -212,8 +212,7 @@ export default class Deck extends React.Component {
           </Body>
 
           <Right>
-            <TouchableOpacity
-              onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: this.state.userId})}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile')}>
               <Thumbnail small source={{uri: `${baseurl}/user_images/${this.state.me.profile_pic}`}} />
             </TouchableOpacity>
           </Right>
@@ -226,7 +225,7 @@ export default class Deck extends React.Component {
             left: '3.3%',
             zIndex: 10,
             backgroundColor: 'white',
-            height: '70%',
+            height: this.state.searchOpacity === 1 ? '70%' : '0%',
             width: '82.7%',
           }}>
           {this.state.filteredUsers.length === 0 ? (
