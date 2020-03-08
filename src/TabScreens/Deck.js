@@ -15,10 +15,10 @@ import {
   Card,
   CardItem,
   cardBody,
+  ListItem,
 } from 'native-base';
 
 import ImageLoad from 'react-native-image-placeholder';
-import Autocomplete from 'react-native-autocomplete-input';
 
 import {
   Modal,
@@ -31,6 +31,9 @@ import {
   PanResponder,
   TouchableOpacity,
   TouchableHighlight,
+  SafeAreaView,
+  FlatList,
+  Keyboard,
 } from 'react-native';
 
 import {getData, postData} from '../helpers/httpServices';
@@ -48,8 +51,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 export default class Deck extends React.Component {
   constructor(props) {
     super(props);
-
-    this.position = new Animated.ValueXY();
     this.state = {
       currentIndex: 0,
       users: [],
@@ -59,6 +60,8 @@ export default class Deck extends React.Component {
       modal: false,
       targetSocketId: -1,
       caller_info: {},
+      me: {},
+      searchOpacity: 0,
     };
   }
 
@@ -67,6 +70,7 @@ export default class Deck extends React.Component {
     let result = await getDataFromToken();
     if (result.ok) {
       let {id} = result.data;
+      this.setState({me: result.data});
       let response = await getData(`user/all-users-except-self/${id}`);
       await this.setState({filteredUsers: response.users, users: response.users});
       return id;
@@ -80,6 +84,12 @@ export default class Deck extends React.Component {
   };
 
   componentDidMount = async () => {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      this.setState({searchOpacity: 1});
+    });
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      this.setState({searchOpacity: 0});
+    });
     let userId = await this.loadUsers();
     await this.setState({userId, loading: false});
     this.socket = this.props.screenProps.socketRef;
@@ -117,7 +127,7 @@ export default class Deck extends React.Component {
         onSwipedRight={index => {
           this.makeLike(index);
         }}>
-        {this.state.filteredUsers.map((item, index) => {
+        {this.state.users.map((item, index) => {
           return (
             <DeckCard
               makeLike={this.makeLike}
@@ -132,19 +142,15 @@ export default class Deck extends React.Component {
     );
   };
 
-  filterDeck = async text => {
-    if (text === '') {
-      let userId = await this.loadUsers();
-      await this.setState({userId, loading: false});
-    } else {
-      let result = await getData(`user/getUsersByPattern/${text}`);
-      if (result.ok) {
-        this.setState({filteredUsers: result.users});
-      } else {
-        alert('technical error');
-      }
-    }
+  searchFilter = text => {
+    let filteredUsers = this.state.users.filter(item => item.username.toLowerCase().includes(text.toLowerCase()));
+    this.setState({filteredUsers: filteredUsers});
   };
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
 
   render() {
     return (
@@ -196,19 +202,64 @@ export default class Deck extends React.Component {
             </View>
           </Container>
         </Modal>
+
         <Header searchBar rounded>
           <Body>
-            <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
+            <Item style={{backgroundColor: 'white', width: '175%', height: '75%'}}>
+              <Input placeholder="Search People .." onChangeText={text => this.searchFilter(text)} />
               <Icon_ name="search" style={{color: 'black'}} />
-              <Input placeholder="Search" onChangeText={text => this.filterDeck(text)} rounded />
             </Item>
           </Body>
 
           <Right>
-            <Thumbnail small source={require('../../images/g2.jpg')} />
+            <TouchableOpacity
+              onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: this.state.userId})}>
+              <Thumbnail small source={{uri: `${baseurl}/user_images/${this.state.me.profile_pic}`}} />
+            </TouchableOpacity>
           </Right>
         </Header>
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            opacity: this.state.searchOpacity,
+            position: 'absolute',
+            top: '10.5%',
+            left: '3.3%',
+            zIndex: 10,
+            backgroundColor: 'white',
+            height: '70%',
+            width: '82.7%',
+          }}>
+          {this.state.filteredUsers.length === 0 ? (
+            <Text style={{margin: 10, color: 'black'}}>No Users With This Username...</Text>
+          ) : null}
+
+          <FlatList
+            data={this.state.filteredUsers}
+            renderItem={({item}) => {
+              return (
+                <ListItem
+                  onPress={() => this.props.screenProps.stackRef.navigate('ViewProfile', {userId: item.id})}
+                  avatar>
+                  <Left>
+                    <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
+                  </Left>
+                  <Body>
+                    <Text>{item.username}</Text>
+                    <Text note>I am very cool person</Text>
+                  </Body>
+                </ListItem>
+              );
+            }}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={item => item.id}
+            removeClippedSubviews={true}
+            initialNumToRender={2}
+            updateCellsBatchingPeriod={1}
+            updateCellsBatchingPeriod={100}
+            windowSize={4}
+          />
+        </View>
+        <View style={{flex: 1, zIndex: -1}}>
           {this.state.loading ? (
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Spinner color="white" />
@@ -268,7 +319,6 @@ export default class Deck extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <View></View>
       </Container>
     );
   }
