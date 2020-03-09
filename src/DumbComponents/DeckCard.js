@@ -64,7 +64,9 @@ export default class DeckCard extends React.Component {
               </Text>
             </TouchableOpacity>
           )}
-          <Button transparent onPress={() => this.props.stackRef.navigate('ViewProfile', {userId: profile.id})}>
+          <Button
+            transparent
+            onPress={() => this.props.stackRef.navigate('ViewProfile', {userId: profile.id, me_id: this.props.me_id})}>
             <Text style={{color: 'orange'}}>View Profile</Text>
             <Icon_ style={{color: 'orange'}} active name="arrow-forward" />
           </Button>

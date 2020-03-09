@@ -1,12 +1,11 @@
 import React from 'react';
 import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid, FlatList} from 'react-native';
-
 import decode from 'jwt-decode';
 import moment from 'moment';
 import {getDataFromToken} from '../helpers/tokenutils';
 import {getAddressFromLatAndLong} from '../helpers/locationutils';
 
-import {uploadImage, getData} from '../helpers/httpServices';
+import {uploadImage, getData, postData} from '../helpers/httpServices';
 import baseurl from '../helpers/baseurl';
 import ImageLoad from 'react-native-image-placeholder';
 
@@ -38,13 +37,34 @@ export default class Profile extends React.Component {
     profile_pic_uri_placeholder:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSfbXfGdccYWDfV83TGwNkVUv80gOfKsXQjnfAw3FYiVMD7X4kn',
     photos: [],
+    likes_list: [],
     upload_fraction: 0,
     upload_fraction_pic: 0,
+    likes: 'Loading...',
+    totalLikes: 'Loading...',
+    me_id: -1,
+    alreadyLiked: false,
   };
 
   getAndSetAge = userdata => {
     var years = moment().diff(userdata.dob, 'years', false);
     this.setState({age: years});
+  };
+
+  findPopularity = (likes, total_likes) => {
+    try {
+      let percentage = (likes / total_likes) * 100;
+
+      if (percentage <= 40) {
+        return 'Low';
+      } else if (percentage > 40 && percentage <= 70) {
+        return 'Medium';
+      } else if (percentage > 70 && percentage <= 100) {
+        return 'High';
+      }
+    } catch (error) {
+      return 'Low';
+    }
   };
 
   getAndSetAddress = async data => {
@@ -56,6 +76,14 @@ export default class Profile extends React.Component {
       this.setState({address: result.address});
     } else {
       ///// Handle Result.ok false
+    }
+  };
+
+  makeLike = async (me_id, profile_id) => {
+    let data = {profileId: profile_id, userId: me_id};
+    let response = await postData(`like/create`, data);
+    if (response.ok) {
+      this.setState(state => ({alreadyLiked: true, likes: parseInt(state.likes) + 1}));
     }
   };
 
@@ -75,27 +103,39 @@ export default class Profile extends React.Component {
 
   componentDidMount = async () => {
     let userId = this.props.navigation.getParam('userId');
-    this.setState({loading: true, userId});
+    let me_id = this.props.navigation.getParam('me_id');
+    this.setState({loading: true, userId, me_id});
     let result = await getData(`user/user-by-id/${userId}`);
 
-    const {ok, user, photos} = result;
+    const {ok, user, photos, likes} = result;
     if (ok) {
       await this.setState({
+        user_id: user.id,
         username: user.username,
         loading: false,
+        likes: user.likes,
+        totalLikes: user.totalLikes,
         profile_pic_uri: `${baseurl}/user_images/${user.profile_pic}`,
         photos,
+        likes_list: likes,
       });
+      this.determineIfAlreadyLiked();
       this.getAndSetAge(user);
       this.getAndSetAddress(user);
     } else {
       /// Handle Else
     }
   };
+  determineIfAlreadyLiked = () => {
+    let filteredLikes = this.state.likes_list.filter(item => item.userId === parseInt(this.state.me_id));
+    if (filteredLikes.length !== 0) {
+      this.setState({alreadyLiked: true});
+    }
+  };
   render() {
     const height = Dimensions.get('screen').height;
     const width = Dimensions.get('screen').width;
-    const {age, username, address, profile_pic_uri} = this.state;
+    const {age, username, address, profile_pic_uri, likes, totalLikes, user_id, me_id} = this.state;
     return (
       <Container>
         <Header>
@@ -160,22 +200,24 @@ export default class Profile extends React.Component {
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
                 <Icon name="heart" style={{color: 'red', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>Medium</Text>
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>
+                  {likes === 'Loading...' ? 'Loading...' : this.findPopularity(likes, totalLikes)}
+                </Text>
                 <Text note>Popularity</Text>
               </View>
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
-                <Icon name="flash" style={{color: 'blue', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>On</Text>
-                <Text note>Super Power</Text>
+                <Icon name="eye" style={{color: 'blue', fontSize: 30}} />
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{10}</Text>
+                <Text note>Views </Text>
               </View>
-              <View
-                style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
-                onPress={() => alert('Like Pressed')}>
-                <Icon name="add-circle" style={{color: 'orange', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>750</Text>
-                <Text note>Super Power</Text>
+              <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <TouchableOpacity disabled={this.state.alreadyLiked} onPress={() => this.makeLike(me_id, user_id)}>
+                  <Icon name="thumbs-up" style={{color: this.state.alreadyLiked ? 'orange' : 'grey'}} />
+                </TouchableOpacity>
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{likes}</Text>
+                <Text note>Likes</Text>
               </View>
             </View>
           </Card>

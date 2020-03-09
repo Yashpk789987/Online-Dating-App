@@ -77,9 +77,18 @@ exports.allUsersExceptSelf = async function(req, res) {
 exports.findById = async function(req, res) {
   try {
     let userId = req.params.userId;
-    let user = await models.User.findById(userId);
+    let user = await models.User.findOne({
+      attributes: {
+        include: [
+          [models.sequelize.literal(`(SELECT COUNT( id ) FROM likes WHERE likes.profile_id = ${userId})`), 'likes'],
+          [models.sequelize.literal(`(SELECT COUNT( id ) FROM likes )`), 'totalLikes'],
+        ],
+      },
+      where: {id: userId},
+    });
     let photos = await models.Photo.findAll({where: {user_id: userId}});
-    res.json({ok: true, user, photos});
+    let likes = await models.Like.findAll({where: {profile_id: userId}});
+    res.json({ok: true, user, photos, likes});
   } catch (error) {
     res.json({ok: false, user: {}, photos: [], error});
   }
@@ -112,7 +121,6 @@ exports.updateToken = async function(req, res) {
     var jwt_token = await jwt.sign(user.dataValues, 'Reactnative@2018', {expiresIn: '30d'});
     res.json({ok: true, token: jwt_token});
   } catch (error) {
-    console.log(error);
     res.json({ok: false, error});
   }
 };
@@ -125,7 +133,6 @@ exports.findUsersBySearchPattern = async function(req, res) {
     });
     res.json({ok: true, users});
   } catch (error) {
-    console.log('error', error);
     res.json({ok: false, users: []});
   }
 };

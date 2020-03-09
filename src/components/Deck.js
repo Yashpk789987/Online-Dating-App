@@ -5,12 +5,6 @@ import {StyleSheet, Text, View, Dimensions, Image, Animated, PanResponder} from 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 import Icon from 'react-native-vector-icons/Ionicons';
-const Users = [
-  {id: '1', uri: require('../../images/g1.jpg')},
-  {id: '2', uri: require('../../images/g2.jpg')},
-  {id: '3', uri: require('../../images/g3.jpg')},
-  {id: '4', uri: require('../../images/g4.jpg')},
-];
 
 export default class Deck extends React.Component {
   constructor() {

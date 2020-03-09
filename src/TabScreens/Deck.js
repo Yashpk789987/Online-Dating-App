@@ -135,6 +135,7 @@ export default class Deck extends React.Component {
               profile={item}
               userId={this.state.userId}
               stackRef={this.props.screenProps.stackRef}
+              me_id={this.state.me.id}
             />
           );
         })}
@@ -206,7 +207,7 @@ export default class Deck extends React.Component {
         <Header searchBar rounded>
           <Body>
             <Item style={{backgroundColor: 'white', width: '175%', height: '75%'}}>
-              <Input placeholder="Search People .." onChangeText={text => this.searchFilter(text)} />
+              <Input placeholder="Search People ...." onChangeText={text => this.searchFilter(text)} />
               <Icon_ name="search" style={{color: 'black'}} />
             </Item>
           </Body>

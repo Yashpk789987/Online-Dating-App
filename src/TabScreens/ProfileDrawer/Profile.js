@@ -231,7 +231,7 @@ export default class Profile extends React.Component {
                 onPress={() => alert('Like Pressed')}>
                 <Icon name="add-circle" style={{color: 'orange', fontSize: 30}} />
                 <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>750</Text>
-                <Text note>Super Power</Text>
+                <Text note>Likes</Text>
               </View>
             </View>
           </Card>

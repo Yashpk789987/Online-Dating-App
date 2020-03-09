@@ -28,9 +28,7 @@ export default function Home(props) {
           </Item>
         </Body>
 
-        <Right>
-          <Thumbnail small source={require('../../images/g2.jpg')} />
-        </Right>
+        <Right>{/* <Thumbnail small source={require('../../images/g2.jpg')} /> */}</Right>
       </Header>
       <Content>
         <View style={styles.flex1}>
@@ -40,7 +38,7 @@ export default function Home(props) {
           </TouchableOpacity>
         </View>
         <ScrollView horizontal={true}>
-          <Card style={styles.card}>
+          {/* <Card style={styles.card}>
             <Image resizeMode="cover" style={styles.image} source={require('../../images/g8.jpg')} />
           </Card>
           <Card style={styles.card}>
@@ -51,11 +49,11 @@ export default function Home(props) {
           </Card>
           <Card style={styles.card}>
             <Image resizeMode="cover" style={styles.image} source={require('../../images/g7.jpg')} />
-          </Card>
+          </Card> */}
         </ScrollView>
         <Content>
           <Card>
-            <CardItem>
+            {/* <CardItem>
               <Left>
                 <Thumbnail source={require('../../images/g7.jpg')} />
                 <Body>
@@ -114,7 +112,7 @@ export default function Home(props) {
               <Right>
                 <Text>7h ago</Text>
               </Right>
-            </CardItem>
+            </CardItem> */}
           </Card>
         </Content>
       </Content>

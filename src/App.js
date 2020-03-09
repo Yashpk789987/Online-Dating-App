@@ -5,12 +5,11 @@ import {StyleProvider, Text} from 'native-base';
 
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import Home from './components/Home';
-import Game from './components/Game';
-import Deck from './components/Deck';
-import VideoChat from './components/VideoChat';
-import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
-import CallManager from './components/CallManager';
+// import Game from './components/Game';
+// import Deck from './components/Deck';
+// import VideoChat from './components/VideoChat';
+// import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
+// import CallManager from './components/CallManager';
 
 import AppStack from './AppStack';
 import AuthStack from './AuthStack';
