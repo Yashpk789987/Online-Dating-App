@@ -5,7 +5,7 @@ import {StyleProvider, Text} from 'native-base';
 
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-// import Game from './components/Game';
+import Game from './components/Game';
 // import Deck from './components/Deck';
 // import VideoChat from './components/VideoChat';
 // import VideoChatWithSocketIO from './components/VideoChatWithSocketIO';
@@ -63,6 +63,7 @@ export default class App extends React.Component {
     return (
       <StyleProvider style={getTheme()}>
         <AppContainer />
+        {/* <Game /> */}
       </StyleProvider>
     );
   }

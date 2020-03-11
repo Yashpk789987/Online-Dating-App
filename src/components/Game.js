@@ -95,7 +95,9 @@ export default class App extends Component {
             />
           </Item>
 
-          <Button style={{width: '100%', marginTop: '3%'}} onPress={this.choseNumber}>
+          <Button
+            style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}
+            onPress={this.choseNumber}>
             <Text style={{color: 'white', textAlign: 'center'}}>Select This Number</Text>
           </Button>
         </Content>

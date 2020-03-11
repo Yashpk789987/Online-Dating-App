@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {Card, Thumbnail, CardItem, Left, Body, Button, Icon as Icon_, Text} from 'native-base';
-import {View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity, Dimensions} from 'react-native';
 import ImageSliderForDeck from './ImageSliderForDeck';
 import {getData} from '../helpers/httpServices';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default class DeckCard extends React.Component {
   constructor(props) {

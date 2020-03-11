@@ -41,6 +41,7 @@ export default class Profile extends React.Component {
     photos: [],
     upload_fraction: 0,
     upload_fraction_pic: 0,
+    likes: 'Loading...',
   };
 
   getAndSetAge = userdata => {
@@ -103,6 +104,13 @@ export default class Profile extends React.Component {
     }
   };
 
+  loadLikes = async profile_id => {
+    let result = await getData(`like/find-by-profileId/${profile_id}`);
+    if (result.ok) {
+      this.setState({likes: result.likes.length, loading: false});
+    }
+  };
+
   componentDidMount = async () => {
     this.setState({loading: true});
     const result = await getDataFromToken();
@@ -111,6 +119,7 @@ export default class Profile extends React.Component {
       await this.setState({username: data.username, userId: data.id, loading: false});
       this.getAndSetAge(data);
       this.getAndSetAddress(data);
+      this.loadLikes(data.id);
       this.loadImages();
     } else {
       ///// Move To Home
@@ -120,7 +129,7 @@ export default class Profile extends React.Component {
   render() {
     const height = Dimensions.get('screen').height;
     const width = Dimensions.get('screen').width;
-    const {age, username, address, profile_pic_uri} = this.state;
+    const {age, username, address, profile_pic_uri, likes, totalLikes} = this.state;
     return (
       <Container>
         <Header>
@@ -216,21 +225,22 @@ export default class Profile extends React.Component {
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
                 <Icon name="heart" style={{color: 'red', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>Medium</Text>
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>
+                  {/* {likes === 'Loading...' ? 'Loading...' : this.findPopularity(likes, totalLikes)} */}
+                  {'Medium'}
+                </Text>
                 <Text note>Popularity</Text>
               </View>
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
-                <Icon name="flash" style={{color: 'blue', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>On</Text>
-                <Text note>Super Power</Text>
+                <Icon name="eye" style={{color: 'blue', fontSize: 30}} />
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{10}</Text>
+                <Text note>Views </Text>
               </View>
-              <View
-                style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
-                onPress={() => alert('Like Pressed')}>
-                <Icon name="add-circle" style={{color: 'orange', fontSize: 30}} />
-                <Text style={{paddingTop: '3%', color: 'black', fontSize: 22, fontWeight: 'bold'}}>750</Text>
+              <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <Icon name="thumbs-up" style={{color: 'orange'}} />
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{this.state.likes}</Text>
                 <Text note>Likes</Text>
               </View>
             </View>

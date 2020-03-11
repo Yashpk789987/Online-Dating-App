@@ -25,7 +25,7 @@ async function notify(token, sender_name, sender_image, message, object) {
       body: message,
     },
     android: {
-      ttl: 0,
+      ttl: 24 * 3600 * 7,
       priority: 'high',
       notification: {
         notification_priority: 'PRIORITY_MAX',

@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {Header, Thumbnail, Body, Container, Icon, Input, Item, Right} from 'native-base';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
+import {Dimensions} from 'react-native';
 import Home from './Home';
 import VideoChat from './VideoChat';
 import Chat from './Chat/index';
@@ -18,6 +19,8 @@ import {removeFromCache, changeInCache} from '../helpers/cacheTools';
 import baseurl from '../helpers/baseurl';
 import firebase from 'react-native-firebase';
 import {postData} from '../helpers/httpServices';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const options = {
   android: {
@@ -75,6 +78,7 @@ const TabNavigator = createBottomTabNavigator(
       activeBackgroundColor: '#3b3b3b',
       inactiveTintColor: 'white',
       activeTintColor: 'orange',
+      style: {height: SCREEN_HEIGHT * 0.08},
     },
   },
 );

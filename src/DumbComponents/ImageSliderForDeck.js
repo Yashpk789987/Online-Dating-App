@@ -21,7 +21,7 @@ import {
 import {getData} from '../helpers/httpServices';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
-SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.45;
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default ImageSliderForDeck = ({userId}) => {
@@ -50,7 +50,7 @@ export default ImageSliderForDeck = ({userId}) => {
           return (
             <ImageLoad
               resizeMode="cover"
-              style={{height: SCREEN_HEIGHT, width: SCREEN_WIDTH}}
+              style={{height: SCREEN_HEIGHT * 0.5, width: SCREEN_WIDTH}}
               source={{uri: `${baseurl}/user_images/${item.name}`}}
             />
           );

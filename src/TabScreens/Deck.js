@@ -45,7 +45,6 @@ import baseurl from '../helpers/baseurl';
 import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
-SCREEN_HEIGHT = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.35;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class Deck extends React.Component {
@@ -204,7 +203,7 @@ export default class Deck extends React.Component {
           </Container>
         </Modal>
 
-        <Header searchBar rounded>
+        <Header style={{height: SCREEN_HEIGHT * 0.08}} searchBar rounded>
           <Body>
             <Item style={{backgroundColor: 'white', width: '175%', height: '75%'}}>
               <Input placeholder="Search People ...." onChangeText={text => this.searchFilter(text)} />
@@ -267,7 +266,13 @@ export default class Deck extends React.Component {
           ) : (
             <View style={{flex: 1}}>{this.renderUsers()}</View>
           )}
-          <View style={{flex: 0.15, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
+          <View
+            style={{
+              height: SCREEN_HEIGHT * 0.12,
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+            }}>
             <TouchableOpacity
               style={{
                 borderWidth: 3,
