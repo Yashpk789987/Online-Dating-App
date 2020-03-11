@@ -134,7 +134,7 @@ export default class Profile extends React.Component {
       <Container>
         <Header>
           <Left>
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+            <TouchableOpacity onPress={() => this.props.screenProps.tabsRef.goBack()}>
               <Icon name="arrow-back" style={{color: 'white'}} />
             </TouchableOpacity>
           </Left>

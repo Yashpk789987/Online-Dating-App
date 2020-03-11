@@ -205,6 +205,7 @@ export default class App extends React.Component {
         });
 
       local.android.setChannelId(notification.android.channelId).android.setSmallIcon('ic_launcher');
+
       firebase.notifications().displayNotification(local);
     });
 

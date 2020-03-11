@@ -43,7 +43,10 @@ export default class DeckCard extends React.Component {
       <Card style={{backgroundColor: 'white'}}>
         <CardItem>
           <Left>
-            <Thumbnail source={{uri: `${baseurl}/user_images/${profile.profile_pic}`}} />
+            <Thumbnail
+              defaultSource={require('../../images/profile.png')}
+              source={{uri: `${baseurl}/user_images/${profile.profile_pic}`}}
+            />
             <Body>
               <Text style={{fontSize: 20, fontWeight: 'bold'}}>{profile.username}</Text>
               <Text note>{profile.username}</Text>

@@ -213,7 +213,11 @@ export default class Deck extends React.Component {
 
           <Right>
             <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile')}>
-              <Thumbnail small source={{uri: `${baseurl}/user_images/${this.state.me.profile_pic}`}} />
+              <Thumbnail
+                small
+                defaultSource={require('../../images/profile.png')}
+                source={{uri: `${baseurl}/user_images/${this.state.me.profile_pic}`}}
+              />
             </TouchableOpacity>
           </Right>
         </Header>

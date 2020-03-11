@@ -87,7 +87,10 @@ export default class Like extends React.Component {
               avatar
               style={{backgroundColor: 'white'}}>
               <Left>
-                <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
+                <Thumbnail
+                  defaultSource={require('../../../images/profile.png')}
+                  source={{uri: `${baseurl}/user_images/${item.profile_pic}`}}
+                />
               </Left>
               <Body style={{width: '50%', flex: 1, flexDirection: 'row'}}>
                 <Text style={{fontSize: 16}}>

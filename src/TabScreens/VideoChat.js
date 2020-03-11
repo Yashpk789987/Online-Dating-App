@@ -200,7 +200,11 @@ export default class VideoChat extends React.Component {
           </Body>
 
           <Right>
-            <Thumbnail small source={require('../../images/g2.jpg')} />
+            <Thumbnail
+              defaultSource={require('../../images/profile.png')}
+              small
+              source={require('../../images/profile.png')}
+            />
           </Right>
         </Header>
         <Content style={{height: '0%'}}>

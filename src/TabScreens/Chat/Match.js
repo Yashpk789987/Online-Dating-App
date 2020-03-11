@@ -88,7 +88,10 @@ export default class Match extends React.Component {
           return (
             <ListItem onPress={() => this.openChat(item)} thumbnail>
               <Left>
-                <Thumbnail source={{uri: `${baseurl}/user_images/${item.profile_pic}`}} />
+                <Thumbnail
+                  defaultSource={require('../../../images/profile.png')}
+                  source={{uri: `${baseurl}/user_images/${item.profile_pic}`}}
+                />
               </Left>
               <Body style={{width: '50%', flex: 1, flexDirection: 'row'}}>
                 <Text style={{color: 'white', fontSize: 16}}>{item.username + '  '}</Text>

@@ -193,7 +193,11 @@ export default class ChatInterface extends React.Component {
             <Icon style={{color: 'white'}} onPress={() => this.props.navigation.goBack()} name="arrow-round-back" />
           </Left>
           <Body style={{marginLeft: '-6%', flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Thumbnail small source={{uri: `${baseurl}/user_images/${this.state.user.profile_pic}`}} />
+            <Thumbnail
+              defaultSource={require('../../images/profile.png')}
+              small
+              source={{uri: `${baseurl}/user_images/${this.state.user.profile_pic}`}}
+            />
             <Text style={{color: 'white', fontSize: 20}}> {name}</Text>
           </Body>
 

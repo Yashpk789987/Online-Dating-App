@@ -44,6 +44,7 @@ class CustomDrawerContent extends React.Component {
             marginLeft: '22%',
             marginRight: '25%',
           }}
+          defaultSource={require('../../../images/profile.png')}
           source={{uri: `${baseurl}/user_images/${me.profile_pic}`}}
         />
 
@@ -57,16 +58,14 @@ class CustomDrawerContent extends React.Component {
                   switch (route.key) {
                     case 'Chat':
                       flag = false;
-                      this.props.navigation.toggleDrawer();
-                      this.props.navigation.navigate('Account');
-
+                      await this.props.navigation.toggleDrawer();
+                      await this.props.navigation.navigate('Account');
                       this.props.screenProps.tabsRef.navigate('Chat');
                       break;
                     case 'Discover':
                       flag = false;
-                      this.props.navigation.toggleDrawer();
+                      await this.props.navigation.toggleDrawer();
                       this.props.navigation.navigate('Account');
-
                       this.props.screenProps.tabsRef.navigate('Home');
                       break;
                     case 'Logout':
@@ -125,7 +124,7 @@ const MyDrawerNavigator = createDrawerNavigator(
   {
     contentComponent: CustomDrawerContent,
     drawerPosition: 'right',
-    // drawerType: 'slide',
+    drawerType: 'slide',
     overlayColor: 'transparent',
     drawerWidth: SCREEN_WIDTH / 1.5,
     contentOptions: {
