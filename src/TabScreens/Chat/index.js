@@ -32,18 +32,6 @@ export default class Chat extends React.Component {
   render() {
     return (
       <Container>
-        {/* <Header searchBar rounded>
-          <Body>
-            <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
-              <Icon name="search" style={{color: 'black'}} />
-              <Input placeholder="Search" rounded />
-            </Item>
-          </Body>
-
-          <Right>
-            <Thumbnail small source={require('../../../images/g2.jpg')} />
-          </Right>
-        </Header> */}
         <MaterialTopTabsContainer screenProps={this.props.navigation.getScreenProps()} />
       </Container>
     );

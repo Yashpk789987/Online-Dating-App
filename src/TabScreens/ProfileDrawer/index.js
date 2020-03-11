@@ -5,14 +5,17 @@ import Profile from './Profile';
 import {Text, Container, Header, Left, Body, Icon, Right} from 'native-base';
 import {ScrollView, SafeAreaView, View, Dimensions, TouchableOpacity} from 'react-native';
 import ImageLoad from 'react-native-image-placeholder';
-
+import {removeFromCache} from '../../helpers/cacheTools';
 import baseurl from '../../helpers/baseurl';
+
+import Invites from './Invites';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 class CustomDrawerContent extends React.Component {
   render() {
     const {me} = this.props.screenProps;
+
     return (
       <View>
         <Header style={{backgroundColor: 'white'}}>
@@ -46,7 +49,39 @@ class CustomDrawerContent extends React.Component {
 
         <ScrollView>
           <SafeAreaView style={{flex: 1}} forceInset={{top: 'always', horizontal: 'never'}}>
-            <DrawerItems {...this.props} />
+            <DrawerItems
+              {...{
+                ...this.props,
+                onItemPress: async ({route, focused}) => {
+                  let flag = true;
+                  switch (route.key) {
+                    case 'Chat':
+                      flag = false;
+                      this.props.navigation.toggleDrawer();
+                      this.props.navigation.navigate('Account');
+
+                      this.props.screenProps.tabsRef.navigate('Chat');
+                      break;
+                    case 'Discover':
+                      flag = false;
+                      this.props.navigation.toggleDrawer();
+                      this.props.navigation.navigate('Account');
+
+                      this.props.screenProps.tabsRef.navigate('Home');
+                      break;
+                    case 'Logout':
+                      await removeFromCache('token', false);
+                      this.props.screenProps.authRef.navigate('Login');
+                      break;
+                    default:
+                      break;
+                  }
+                  if (flag) {
+                    this.props.onItemPress({route, focused});
+                  }
+                },
+              }}
+            />
           </SafeAreaView>
         </ScrollView>
       </View>
@@ -63,25 +98,25 @@ const MyDrawerNavigator = createDrawerNavigator(
       },
     },
     Invites: {
-      screen: Profile,
+      screen: Invites,
       navigationOptions: {
         drawerIcon: <Icon name="person-add" />,
       },
     },
     Chat: {
-      screen: Profile,
+      screen: () => <></>,
       navigationOptions: {
         drawerIcon: <Icon name="chatbubbles" />,
       },
     },
     Discover: {
-      screen: Profile,
+      screen: () => <></>,
       navigationOptions: {
         drawerIcon: <Icon name="globe" />,
       },
     },
     Logout: {
-      screen: Profile,
+      screen: () => <></>,
       navigationOptions: {
         drawerIcon: <Icon name="arrow-dropleft-circle" />,
       },
@@ -90,6 +125,8 @@ const MyDrawerNavigator = createDrawerNavigator(
   {
     contentComponent: CustomDrawerContent,
     drawerPosition: 'right',
+    // drawerType: 'slide',
+    overlayColor: 'transparent',
     drawerWidth: SCREEN_WIDTH / 1.5,
     contentOptions: {
       inactiveTintColor: 'grey',
@@ -99,4 +136,11 @@ const MyDrawerNavigator = createDrawerNavigator(
   },
 );
 
-export default createAppContainer(MyDrawerNavigator);
+const Drawer = createAppContainer(MyDrawerNavigator);
+
+export default class ProfileDrawer extends React.Component {
+  render() {
+    let screenProps = {...this.props.navigation.getScreenProps(), tabsRef: this.props.navigation};
+    return <Drawer screenProps={screenProps} />;
+  }
+}
