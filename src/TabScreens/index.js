@@ -231,6 +231,7 @@ export default class App extends React.Component {
       socketRef: this.socket,
       stackRef: this.props.navigation,
       authRef: this.props.screenProps.authRef,
+      me: this.state.user,
     });
     if (this.state.go_to_chat_interface && this.state.connected_to_io) {
       let {user} = this.state.notification_object.notification.data;

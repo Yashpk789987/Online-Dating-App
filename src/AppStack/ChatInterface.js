@@ -4,11 +4,12 @@ import {View, StyleSheet, TouchableOpacity, TextInput, Keyboard} from 'react-nat
 import {GiftedChat} from 'react-native-gifted-chat';
 import EmojiInput from 'react-native-emoji-input';
 import {Icon, Input, Item} from 'native-base';
-import {Header, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 'native-base';
+import {Header, Thumbnail, Left, Body, Right, Text, Button, Icon as Icon_, Container} from 'native-base';
 
 import searchGifs from '../helpers/searchGifs';
 import GiphySearch from '../components/GiphySearch';
 import {getData} from '../helpers/httpServices';
+import baseurl from '../helpers/baseurl';
 import uuid from 'uuid';
 
 export default class ChatInterface extends React.Component {
@@ -184,14 +185,16 @@ export default class ChatInterface extends React.Component {
 
   render() {
     const {name} = this.state;
+
     return (
       <Container>
         <Header>
           <Left>
             <Icon style={{color: 'white'}} onPress={() => this.props.navigation.goBack()} name="arrow-round-back" />
           </Left>
-          <Body>
-            <Text style={{color: 'white', fontSize: 20}}>{name}</Text>
+          <Body style={{marginLeft: '-6%', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Thumbnail small source={{uri: `${baseurl}/user_images/${this.state.user.profile_pic}`}} />
+            <Text style={{color: 'white', fontSize: 20}}> {name}</Text>
           </Body>
 
           <Right></Right>
