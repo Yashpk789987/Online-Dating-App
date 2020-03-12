@@ -1,3 +1,5 @@
+/// PRESENTLY THIS COMPONENT IS OF NO USE //////
+
 import React from 'react';
 import {ScrollView, Image, Dimensions, StyleSheet, View, TouchableOpacity} from 'react-native';
 import {

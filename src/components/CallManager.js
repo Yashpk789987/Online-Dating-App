@@ -1,3 +1,5 @@
+///// DEMO FOR IMPLEMENTIG CALLING MANAGEMENT /////
+
 import React, {useState, useEffect} from 'react';
 import InCallManager from 'react-native-incall-manager';
 import {Text, TouchableOpacity} from 'react-native';

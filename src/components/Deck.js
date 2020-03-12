@@ -1,3 +1,7 @@
+///// DECK CARDS IN VANILLA /////
+
+//// MAY BE I WILL USE IT LATER ///
+
 import React from 'react';
 import {Header, Left, Body, Right, Button, Icon as Icon_} from 'native-base';
 import {StyleSheet, Text, View, Dimensions, Image, Animated, PanResponder} from 'react-native';

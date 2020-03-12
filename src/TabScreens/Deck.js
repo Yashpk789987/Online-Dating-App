@@ -36,13 +36,15 @@ import {
   Keyboard,
 } from 'react-native';
 
+import Icon from 'react-native-vector-icons/Ionicons';
+import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
+
 import {getData, postData} from '../helpers/httpServices';
 import {getDataFromToken} from '../helpers/tokenutils';
 import ImageSliderForDeck from '../DumbComponents/ImageSliderForDeck';
 import DeckCard from '../DumbComponents/DeckCard';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import baseurl from '../helpers/baseurl';
-import CardStack, {Card as Card_} from 'react-native-card-stack-swiper';
 
 let SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;

@@ -15,6 +15,7 @@ const GiphySearch = ({query, onSearch, search, search_results, onPick}) => {
       </View>
       {search_results && (
         <FlatList
+          keyboardShouldPersistTaps="handled"
           data={search_results}
           renderItem={({item}) => {
             return (

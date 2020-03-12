@@ -1,3 +1,5 @@
+///// THIS COMPONENT IS THE MINIMAL EXAMPLE OF WEBRTC(React Native) ////
+
 import React from 'react';
 import {View, SafeAreaView, StyleSheet, Text, Button} from 'react-native';
 

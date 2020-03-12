@@ -1,3 +1,7 @@
+///// I DO NOT KNOW JUST WHY I HAVE MADE THIS ////
+
+//// I WILL CLEAN OUT ONCE I FIGURED OUT //////
+
 import React from 'react';
 import InCallManager from 'react-native-incall-manager';
 import {View} from 'react-native';

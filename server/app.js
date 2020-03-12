@@ -27,12 +27,10 @@ async function notify(token, sender_name, sender_image, message, object) {
     android: {
       ttl: 24 * 3600 * 7,
       priority: 'high',
-
       notification: {
         notification_priority: 'PRIORITY_MAX',
         sound: 'default',
         image: `${baseurl}/user_images/${sender_image}`,
-        icon: `${baseurl}/user_images/${sender_image}`,
         local_only: true,
         default_vibrate_timings: true,
         channel_id: 'test-channel',
