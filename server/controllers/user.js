@@ -136,3 +136,13 @@ exports.findUsersBySearchPattern = async function(req, res) {
     res.json({ok: false, users: []});
   }
 };
+
+exports.logout = async function(req, res) {
+  try {
+    let {userId} = req.body;
+    await models.sequelize.query(`update users set token = '' where id = ${parseInt(userId)}`);
+    res.json({ok: true});
+  } catch (error) {
+    res.json({ok: false, error});
+  }
+};

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+
 import {ImageBackground, StatusBar, Text, View} from 'react-native';
 
 import {Container, Header, Content, Item, Input, Button} from 'native-base';

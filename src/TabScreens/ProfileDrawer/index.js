@@ -1,18 +1,28 @@
 import React from 'react';
 import {createDrawerNavigator, DrawerItems} from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
-import Profile from './Profile';
+
 import {Text, Container, Header, Left, Body, Icon, Right} from 'native-base';
 import {ScrollView, SafeAreaView, View, Dimensions, TouchableOpacity} from 'react-native';
 import ImageLoad from 'react-native-image-placeholder';
 import {removeFromCache} from '../../helpers/cacheTools';
+import {postData} from '../../helpers/httpServices';
 import baseurl from '../../helpers/baseurl';
 
 import Invites from './Invites';
+import Profile from './Profile';
+import Logout from './Logout';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 class CustomDrawerContent extends React.Component {
+  logout = async () => {
+    let response = await postData(`user/logout`, {userId: this.props.screenProps.me.id});
+    if (response.ok) {
+      await removeFromCache('token');
+      this.props.screenProps.authRef.navigate('Login');
+    }
+  };
   render() {
     const {me} = this.props.screenProps;
 
@@ -69,8 +79,7 @@ class CustomDrawerContent extends React.Component {
                       this.props.screenProps.tabsRef.navigate('Home');
                       break;
                     case 'Logout':
-                      await removeFromCache('token', false);
-                      this.props.screenProps.authRef.navigate('Login');
+                      this.logout();
                       break;
                     default:
                       break;
@@ -115,7 +124,7 @@ const MyDrawerNavigator = createDrawerNavigator(
       },
     },
     Logout: {
-      screen: () => <></>,
+      screen: () => <Logout />,
       navigationOptions: {
         drawerIcon: <Icon name="arrow-dropleft-circle" />,
       },
