@@ -5,6 +5,7 @@ import {createAppContainer} from 'react-navigation';
 import {Dimensions} from 'react-native';
 import Home from './Home';
 import VideoChat from './VideoChat';
+import VoipAndVideoChat from './VoipAndVideoChat';
 import Chat from './Chat/index';
 import Deck from './Deck';
 import NearbyLocations from './NearbyLocations';

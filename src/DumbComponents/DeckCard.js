@@ -37,7 +37,7 @@ export default class DeckCard extends React.Component {
   };
 
   render() {
-    const {profile} = this.props;
+    const {profile, index} = this.props;
     const {loading, likes, alreadyLiked} = this.state;
     return (
       <Card style={{backgroundColor: 'white'}}>
@@ -61,7 +61,7 @@ export default class DeckCard extends React.Component {
             <TouchableOpacity
               disabled={alreadyLiked}
               style={{marginLeft: '5%', flexDirection: 'row', justifyContent: 'center', alignItems: 'space-between'}}
-              onPress={() => this.makeLike(index, profile.id)}>
+              onPress={() => this.props.makeLike(index, profile.id)}>
               <Icon_ style={{color: alreadyLiked ? 'orange' : 'grey'}} active name="thumbs-up" />
               <Text style={{color: alreadyLiked ? 'orange' : 'grey'}}>
                 {'  '}

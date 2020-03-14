@@ -1,15 +1,15 @@
 import firebase from 'react-native-firebase';
-
 import React from 'react';
+import {Alert} from 'react-native';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createAppContainer} from 'react-navigation';
+import type {Notification} from 'react-native-firebase';
+
 import TabScreens from '../TabScreens';
 import PlaceDetail from './PlaceDetail';
 import ChatInterface from './ChatInterface';
 import ViewProfile from './ViewProfile';
-import {Alert} from 'react-native';
-import {createStackNavigator} from 'react-navigation-stack';
-
-import {createAppContainer} from 'react-navigation';
-import type {Notification} from 'react-native-firebase';
+import VideoChat from './VideoChat';
 
 const App = createAppContainer(
   createStackNavigator(
@@ -25,6 +25,9 @@ const App = createAppContainer(
       },
       ViewProfile: {
         screen: ViewProfile,
+      },
+      VideoChat: {
+        screen: VideoChat,
       },
     },
     {

@@ -153,8 +153,6 @@ io.on('connection', socket => {
     users: socketsArray,
   });
 
-  console.log(socketsArray);
-
   socket.on('disconnect', () => {
     let index = socketsArray
       .map(function(d) {
@@ -168,16 +166,18 @@ io.on('connection', socket => {
 
   //////////// OFFER LISTENER //////////////
   socket.on('make-offer', function(data) {
+    console.log('make-oofer');
     socket.to(data.to).emit('offer-made', {
       offer: data.offer,
       socket: socket.id,
+      calling_type: data.calling_type,
     });
   });
 
   /////////// OFFER LISTENER //////////////
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   socket.on('make-answer', function(data) {
-    //console.log('make answer ');
+    console.log('make answer');
     socket.to(data.to).emit('answer-made', {
       socket: socket.id,
       answer: data.answer,
@@ -185,22 +185,20 @@ io.on('connection', socket => {
   });
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   /////////   FOR DISCONECTING CALL /////////////////
-  socket.on('disconnect-call', function(data) {
-    socket.to(data.to).emit('do-disconnect', {
-      socket: socket.id,
-    });
-  });
+  // socket.on('disconnect-call', function(data) {
+  //   socket.to(data.to).emit('do-disconnect', {
+  //     socket: socket.id,
+  //   });
+  // });
   /////////   FOR DISCONECTING CALL /////////////////
   /////////   FOR  CALL  REQUEST  ///////////////////
   socket.on('call-request', function(data) {
-    console.log('call-request', data);
     socket.to(data.to).emit('on-call-request', {
       socket: socket.id,
       info: data.info,
     });
   });
   socket.on('acknowledge-call', function(data) {
-    console.log('acknowledge-call', data);
     socket.to(data.to).emit('on-acknowledge-call', {
       socket: socket.id,
       code: data.code,
@@ -234,7 +232,6 @@ io.on('connection', socket => {
   });
   socket.on('leave-room', function(data) {
     let result = findChatRoom(data.room_name);
-
     if (result.ok) {
       socket.leave(result.room);
     }

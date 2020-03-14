@@ -109,6 +109,10 @@ export default class Deck extends React.Component {
     });
     this.setState({modal: false, targetSocketId: -1, caller_info: {}});
     this.props.navigation.navigate('VideoChat');
+    //  this.props.screenProps.stackRef.navigate('VideoChat', {
+    //   socketRef: this.props.screenProps.socketRef,
+    //   create_offer: false,
+    // });
   };
 
   rejectCall = () => {

@@ -149,7 +149,6 @@ export default class Profile extends React.Component {
           </Body>
           <Right></Right>
         </Header>
-
         <Content>
           <Card
             style={{

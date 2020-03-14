@@ -91,18 +91,17 @@ export default class PlaceDetail extends React.Component {
         <Content style={{padding: '2%'}}>
           <ImageSlider photos={this.state.photos} />
           <View style={{backgroundColor: 'white', marginTop: '2%'}}>
-            <Body style={{paddingTop: '5%'}}>
-              <Text style={{fontWeight: 'bold', fontSize: 25, paddingLeft: '2%', paddingRight: '2%'}}>
-                {this.state.name}
-              </Text>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontWeight: 'bold', fontSize: 25}}>{this.state.name}</Text>
               <Text>{this.state.week_days[0]}</Text>
-            </Body>
+            </View>
             <View
               style={{
-                padding: '2%',
                 flex: 0.1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
+                paddingLeft: '2%',
+                paddingRight: '2%',
               }}>
               <StarRating
                 starSize={25}

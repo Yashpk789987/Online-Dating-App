@@ -69,7 +69,7 @@ class CustomDrawerContent extends React.Component {
                     case 'Chat':
                       flag = false;
                       await this.props.navigation.toggleDrawer();
-                      await this.props.navigation.navigate('Account');
+                      this.props.navigation.navigate('Account');
                       this.props.screenProps.tabsRef.navigate('Chat');
                       break;
                     case 'Discover':
