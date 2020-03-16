@@ -97,6 +97,7 @@ export default class Deck extends React.Component {
     this.socket.on(
       'on-call-request',
       async function(data) {
+        console.log('on-call-request', data);
         await this.setState({modal: true, targetSocketId: data.socket, caller_info: data.info});
       }.bind(this),
     );

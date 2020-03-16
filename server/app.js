@@ -166,7 +166,6 @@ io.on('connection', socket => {
 
   //////////// OFFER LISTENER //////////////
   socket.on('make-offer', function(data) {
-    console.log('make-oofer');
     socket.to(data.to).emit('offer-made', {
       offer: data.offer,
       socket: socket.id,
@@ -177,7 +176,6 @@ io.on('connection', socket => {
   /////////// OFFER LISTENER //////////////
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   socket.on('make-answer', function(data) {
-    console.log('make answer');
     socket.to(data.to).emit('answer-made', {
       socket: socket.id,
       answer: data.answer,
@@ -185,14 +183,14 @@ io.on('connection', socket => {
   });
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   /////////   FOR DISCONECTING CALL /////////////////
-  // socket.on('disconnect-call', function(data) {
-  //   socket.to(data.to).emit('do-disconnect', {
-  //     socket: socket.id,
-  //   });
-  // });
+  socket.on('disconnect-call', function(data) {
+    console.log('I called', data);
+    socket.to(data.to).emit('do-disconnect');
+  });
   /////////   FOR DISCONECTING CALL /////////////////
   /////////   FOR  CALL  REQUEST  ///////////////////
   socket.on('call-request', function(data) {
+    console.log(data);
     socket.to(data.to).emit('on-call-request', {
       socket: socket.id,
       info: data.info,

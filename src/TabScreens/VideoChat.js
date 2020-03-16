@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import InCallManager from 'react-native-incall-manager';
-import baseurl from '../helpers/baseurl';
 import io from 'socket.io-client';
 import {View, SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {
@@ -18,11 +17,14 @@ import {
   Thumbnail,
   Icon,
   Badge,
+  Spinner,
 } from 'native-base';
 import {RTCPeerConnection, RTCSessionDescription, RTCView, mediaDevices} from 'react-native-webrtc';
 import {NavigationActions, StackActions, createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
+import baseurl from '../helpers/baseurl';
+import {getData} from '../helpers/httpServices';
 export default class VideoChat extends React.Component {
   constructor(props) {
     super(props);
@@ -34,6 +36,8 @@ export default class VideoChat extends React.Component {
       localStream: '',
       remoteStream: '',
       targetSocketId: '',
+      loading: false,
+      matches_ids: [],
     };
   }
 
@@ -64,6 +68,17 @@ export default class VideoChat extends React.Component {
     }
   };
 
+  loadMatches = async () => {
+    this.setState({loading: true});
+    let result = await getData(`like/load-matches-by-profileId/${this.state.user_id}`);
+    if (result.ok) {
+      let matches_ids = result.matches.map(m => parseInt(m.profile_id));
+      this.setState({loading: false, matches_ids});
+    } else {
+      alert('technical Error ');
+    }
+  };
+
   onAddStream = e => {
     try {
       InCallManager.start({media: 'video'});
@@ -74,7 +89,12 @@ export default class VideoChat extends React.Component {
     }
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
+    this.props.navigation.addListener('didFocus', () => {
+      this.loadMatches();
+    });
+    await this.setState({user_id: this.props.screenProps.me.id});
+    await this.loadMatches();
     this.socket = this.props.screenProps.socketRef;
     const configuration = {iceServers: [{url: 'stun:stun.l.google.com:19302'}]};
     this.pc = new RTCPeerConnection(configuration);
@@ -109,16 +129,12 @@ export default class VideoChat extends React.Component {
       }.bind(this),
     );
 
-    // this.socket.on(
-    //   'do-disconnect',
-    //   function(data) {
-    //     if (this.remoteVideo === true) {
-    //       this.setState({remoteVideo: false, localVideo: false, remoteStream: '', localStream: ''});
-    //       this.pc.close();
-    //       this.setState({targetSocketId: ''});
-    //     }
-    //   }.bind(this),
-    // );
+    this.socket.on(
+      'do-disconnect',
+      function(data) {
+        this.onDestroyCall();
+      }.bind(this),
+    );
 
     this.socket.on(
       'on-acknowledge-call',
@@ -132,7 +148,7 @@ export default class VideoChat extends React.Component {
     );
 
     this.startLocalStream();
-  }
+  };
 
   createOffer = async id => {
     try {
@@ -151,6 +167,11 @@ export default class VideoChat extends React.Component {
 
   onDestroyCall = () => {
     try {
+      ////// EMIT SOCKET FOR DISCONNECTING CALL  ///////
+      this.socket.emit('disconnect-call', {
+        to: this.state.targetSocketId,
+      });
+      /////  EMIT SOCKET FOR DISCONNECTING CALL  ///////
       this.state.localStream.getTracks().forEach(function(track) {
         track.stop();
       });
@@ -174,31 +195,47 @@ export default class VideoChat extends React.Component {
       this.pc = new RTCPeerConnection(configuration);
       this.pc.onaddstream = this.onAddStream;
       this.startLocalStream();
-      ////// EMIT SOCKET FOR DISCONNECTING CALL  ///////
-      // this.socket.emit('disconnect-call', {
-      //   to: this.state.targetSocketId,
-      // });
-      /////  EMIT SOCKET FOR DISCONNECTING CALL  ///////
-      this.setState({targetSocketId: -1});
-      let resetAction = StackActions.reset({
-        index: 0,
-        actions: [NavigationActions.init({routeName: 'Home'})],
-      });
-      this.props.navigation.dispatch(resetAction);
     } catch (error) {
       console.log('ERROR DESTROY CALL', error);
     }
   };
 
   makeCallRequest = async (id, info, calling_type) => {
+    let {me} = this.props.screenProps;
     this.socket.emit('call-request', {
       to: id,
-      info: info,
+      info: me,
     });
   };
 
   render() {
-    const {localVideo, remoteVideo} = this.state;
+    const {localVideo, remoteVideo, loading, matches_ids} = this.state;
+    const online_users = this.props.screenProps.users.filter(u => matches_ids.includes(parseInt(u.info.id)));
+    if (loading) {
+      return (
+        <View>
+          <Header searchBar rounded>
+            <Body>
+              <Item style={{backgroundColor: 'white', width: '165%', height: '75%'}} rounded>
+                <Icon name="search" style={{color: 'black'}} />
+                <Input placeholder="Search" rounded />
+              </Item>
+            </Body>
+
+            <Right>
+              <Thumbnail
+                defaultSource={require('../../images/profile.png')}
+                small
+                source={require('../../images/profile.png')}
+              />
+            </Right>
+          </Header>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Spinner color="white" />
+          </View>
+        </View>
+      );
+    }
     return (
       <Container>
         <Header searchBar rounded>
@@ -221,11 +258,11 @@ export default class VideoChat extends React.Component {
           <Text style={{color: 'white', padding: '2%', fontSize: 20, fontWeight: 'bold'}}>Online Users</Text>
           {this.state.remoteVideo ? (
             <></>
-          ) : this.props.screenProps.users.length === 0 ? (
+          ) : online_users.length === 0 ? (
             <Text style={{marginLeft: '25%', color: 'white', fontSize: 20}}>No Users Online ...</Text>
           ) : (
             <List>
-              {this.props.screenProps.users.map((item, index) => {
+              {online_users.map((item, index) => {
                 return (
                   <ListItem thumbnail>
                     <Left>
