@@ -63,6 +63,7 @@ export default class Deck extends React.Component {
       caller_info: {},
       me: {},
       searchOpacity: 0,
+      calling_type: 'video',
     };
   }
 
@@ -97,8 +98,12 @@ export default class Deck extends React.Component {
     this.socket.on(
       'on-call-request',
       async function(data) {
-        console.log('on-call-request', data);
-        await this.setState({modal: true, targetSocketId: data.socket, caller_info: data.info});
+        await this.setState({
+          modal: true,
+          targetSocketId: data.socket,
+          caller_info: data.info,
+          calling_type: data.calling_type,
+        });
       }.bind(this),
     );
   };
@@ -107,9 +112,10 @@ export default class Deck extends React.Component {
     this.socket.emit('acknowledge-call', {
       to: this.state.targetSocketId,
       code: 'accepted',
+      calling_type: this.state.calling_type,
     });
     this.setState({modal: false, targetSocketId: -1, caller_info: {}});
-    this.props.navigation.navigate('VideoChat');
+    this.props.navigation.navigate('VideoChat', {calling_type: this.state.calling_type});
   };
 
   rejectCall = () => {

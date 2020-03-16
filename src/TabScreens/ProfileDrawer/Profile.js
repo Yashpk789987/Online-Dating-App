@@ -224,24 +224,14 @@ export default class Profile extends React.Component {
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
-                <Icon name="heart" style={{color: 'red', fontSize: 30}} />
-                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>
-                  {/* {likes === 'Loading...' ? 'Loading...' : this.findPopularity(likes, totalLikes)} */}
-                  {'Medium'}
-                </Text>
-                <Text note>Popularity</Text>
-              </View>
-              <View
-                style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
-                onPress={() => alert('Like Pressed')}>
                 <Icon name="eye" style={{color: 'blue', fontSize: 30}} />
                 <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{10}</Text>
-                <Text note>Views </Text>
+                <Text note>Profile Views</Text>
               </View>
               <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                <Icon name="thumbs-up" style={{color: 'orange'}} />
-                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{this.state.likes}</Text>
-                <Text note>Likes</Text>
+                <Icon name="person-add" style={{color: 'orange'}} />
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}> </Text>
+                <Text note>Invite People</Text>
               </View>
             </View>
           </Card>

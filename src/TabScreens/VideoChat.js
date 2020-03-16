@@ -39,6 +39,7 @@ export default class VideoChat extends React.Component {
       loading: false,
       matches_ids: [],
       speaker: true,
+      calling_type: 'video',
     };
   }
 
@@ -51,15 +52,18 @@ export default class VideoChat extends React.Component {
       const facingMode = isFront ? 'user' : 'environment';
       const constraints = {
         audio: true,
-        video: {
-          mandatory: {
-            minWidth: 500,
-            minHeight: 300,
-            minFrameRate: 30,
-          },
-          facingMode,
-          optional: videoSourceId ? [{sourceId: videoSourceId}] : [],
-        },
+        video:
+          this.state.calling_type === 'video'
+            ? {
+                mandatory: {
+                  minWidth: 500,
+                  minHeight: 300,
+                  minFrameRate: 30,
+                },
+                facingMode,
+                optional: videoSourceId ? [{sourceId: videoSourceId}] : [],
+              }
+            : false,
       };
       const newStream = await mediaDevices.getUserMedia(constraints);
       await this.pc.addStream(newStream);
@@ -91,7 +95,13 @@ export default class VideoChat extends React.Component {
   };
 
   componentDidMount = async () => {
-    this.props.navigation.addListener('didFocus', () => {
+    this.props.navigation.addListener('didFocus', async () => {
+      try {
+        let calling_type = this.props.navigation.getParam('calling_type');
+        if (calling_type) {
+          await this.setState({calling_type: calling_type});
+        }
+      } catch (error) {}
       this.loadMatches();
     });
     await this.setState({user_id: this.props.screenProps.me.id});
@@ -102,6 +112,11 @@ export default class VideoChat extends React.Component {
     this.pc.onaddstream = this.onAddStream;
     this.socket.on('offer-made', async data => {
       try {
+        if (data.calling_type === 'audio') {
+          InCallManager.setSpeakerphoneOn(false);
+          this.setState({speaker: false});
+        }
+        this.setState({calling_type: data.calling_type});
         let offer = data.offer;
         await this.pc.setRemoteDescription(new RTCSessionDescription(data.offer));
         let answer = await this.pc.createAnswer();
@@ -109,6 +124,7 @@ export default class VideoChat extends React.Component {
         this.socket.emit('make-answer', {
           answer: answer,
           to: data.socket,
+          calling_type: data.calling_type,
         });
       } catch (error) {
         console.log(error);
@@ -119,6 +135,11 @@ export default class VideoChat extends React.Component {
       'answer-made',
       async function(data) {
         try {
+          if (data.calling_type === 'audio') {
+            InCallManager.setSpeakerphoneOn(false);
+            this.setState({speaker: false});
+          }
+          this.setState({calling_type: data.calling_type});
           await this.pc.setRemoteDescription(new RTCSessionDescription(data.answer));
           if (!this.state.answersFrom[data.socket]) {
             this.createOffer(data.socket);
@@ -139,8 +160,9 @@ export default class VideoChat extends React.Component {
 
     this.socket.on(
       'on-acknowledge-call',
-      function(data) {
+      async function(data) {
         if (data.code === 'accepted') {
+          await this.setState({calling_type: data.calling_type});
           this.createOffer(data.socket);
         } else {
           alert('User Rejected Your Call');
@@ -190,6 +212,7 @@ export default class VideoChat extends React.Component {
         localStream: '',
         answersFrom: {},
         targetSocketId: '',
+        calling_type: 'video',
       });
       InCallManager.stop();
       const configuration = {iceServers: [{url: 'stun:stun.l.google.com:19302'}]};
@@ -202,10 +225,16 @@ export default class VideoChat extends React.Component {
   };
 
   makeCallRequest = async (id, info, calling_type) => {
+    if (calling_type === 'audio') {
+      InCallManager.setSpeakerphoneOn(false);
+      this.setState({speaker: false});
+    }
+    await this.setState({calling_type: calling_type});
     let {me} = this.props.screenProps;
     this.socket.emit('call-request', {
       to: id,
       info: me,
+      calling_type: this.state.calling_type,
     });
   };
 
@@ -236,8 +265,9 @@ export default class VideoChat extends React.Component {
               />
             </Right>
           </Header>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{marginTop: '5%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Spinner color="white" />
+            <Text style={{color: 'white', fontSize: 18}}>Loading Online Users...</Text>
           </View>
         </View>
       );
@@ -281,7 +311,8 @@ export default class VideoChat extends React.Component {
 
                     <Right
                       style={{flex: 0.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <TouchableOpacity onPress={() => this.makeCallRequest(item.socket_id, item.info, 'audio')}>
+                      <TouchableOpacity
+                        onPress={async () => await this.makeCallRequest(item.socket_id, item.info, 'audio')}>
                         <Icon name="call" />
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => this.makeCallRequest(item.socket_id, item.info, 'video')}>
@@ -294,7 +325,7 @@ export default class VideoChat extends React.Component {
             </List>
           )}
         </Content>
-        {this.state.localVideo ? (
+        {this.state.localVideo && this.state.calling_type === 'video' ? (
           <RTCView
             objectFit="cover"
             style={{
@@ -308,7 +339,7 @@ export default class VideoChat extends React.Component {
         ) : (
           <></>
         )}
-        {this.state.localVideo ? (
+        {this.state.localVideo && this.state.calling_type === 'video' ? (
           <RTCView
             style={{
               marginLeft: '35%',
@@ -323,6 +354,11 @@ export default class VideoChat extends React.Component {
         ) : (
           <></>
         )}
+        {this.state.calling_type === 'audio' && this.state.localVideo && this.state.remoteVideo ? (
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{color: 'white', fontSize: 18}}>You Both Are On Audio Call...</Text>
+          </View>
+        ) : null}
         <View
           style={{
             position: 'absolute',

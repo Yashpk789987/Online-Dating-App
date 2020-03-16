@@ -179,27 +179,28 @@ io.on('connection', socket => {
     socket.to(data.to).emit('answer-made', {
       socket: socket.id,
       answer: data.answer,
+      calling_type: data.calling_type,
     });
   });
   ////////// OFFER ANSWER LISTENER  LISTENER FROM OTHER CLIENT ///////
   /////////   FOR DISCONECTING CALL /////////////////
   socket.on('disconnect-call', function(data) {
-    console.log('I called', data);
     socket.to(data.to).emit('do-disconnect');
   });
   /////////   FOR DISCONECTING CALL /////////////////
   /////////   FOR  CALL  REQUEST  ///////////////////
   socket.on('call-request', function(data) {
-    console.log(data);
     socket.to(data.to).emit('on-call-request', {
       socket: socket.id,
       info: data.info,
+      calling_type: data.calling_type,
     });
   });
   socket.on('acknowledge-call', function(data) {
     socket.to(data.to).emit('on-acknowledge-call', {
       socket: socket.id,
       code: data.code,
+      calling_type: data.calling_type,
     });
   });
   /////////   FOR  CALL  REQUEST  ///////////////////
