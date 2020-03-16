@@ -74,6 +74,7 @@ const TabNavigator = createBottomTabNavigator(
   },
   {
     initialRouteName: 'Home',
+    lazy: false,
     tabBarOptions: {
       inactiveBackgroundColor: '#3b3b3b',
       activeBackgroundColor: '#3b3b3b',

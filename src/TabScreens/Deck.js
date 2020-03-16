@@ -115,7 +115,7 @@ export default class Deck extends React.Component {
       calling_type: this.state.calling_type,
     });
     this.setState({modal: false, targetSocketId: -1, caller_info: {}});
-    this.props.navigation.navigate('VideoChat', {calling_type: this.state.calling_type});
+    this.props.navigation.navigate('VideoChat', {make_offer: true, calling_type: this.state.calling_type});
   };
 
   rejectCall = () => {

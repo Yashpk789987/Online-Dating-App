@@ -95,6 +95,7 @@ export default class VideoChat extends React.Component {
   };
 
   componentDidMount = async () => {
+    await this.setState({user_id: this.props.screenProps.me.id});
     this.props.navigation.addListener('didFocus', async () => {
       try {
         let calling_type = this.props.navigation.getParam('calling_type');
@@ -104,7 +105,7 @@ export default class VideoChat extends React.Component {
       } catch (error) {}
       this.loadMatches();
     });
-    await this.setState({user_id: this.props.screenProps.me.id});
+
     await this.loadMatches();
     this.socket = this.props.screenProps.socketRef;
     const configuration = {iceServers: [{url: 'stun:stun.l.google.com:19302'}]};
