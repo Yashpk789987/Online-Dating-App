@@ -3,6 +3,12 @@ import {Header, Thumbnail, Body, Container, Icon, Input, Item, Right} from 'nati
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
 import {Dimensions} from 'react-native';
+import io from 'socket.io-client';
+import InCallManager from 'react-native-incall-manager';
+import RNCallKeep from 'react-native-callkeep';
+import firebase from 'react-native-firebase';
+import Icon_ from 'react-native-vector-icons/FontAwesome';
+
 import Home from './Home';
 import VideoChat from './VideoChat';
 import VoipAndVideoChat from './VoipAndVideoChat';
@@ -10,15 +16,11 @@ import Chat from './Chat/index';
 import Deck from './Deck';
 import NearbyLocations from './NearbyLocations';
 import ProfileDrawer from './ProfileDrawer/';
-
 import Profile from './Profile';
-import io from 'socket.io-client';
-import InCallManager from 'react-native-incall-manager';
-import RNCallKeep from 'react-native-callkeep';
+
+import baseurl from '../helpers/baseurl';
 import {getDataFromToken} from '../helpers/tokenutils';
 import {removeFromCache, changeInCache} from '../helpers/cacheTools';
-import baseurl from '../helpers/baseurl';
-import firebase from 'react-native-firebase';
 import {postData} from '../helpers/httpServices';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -54,7 +56,7 @@ const TabNavigator = createBottomTabNavigator(
       screen: Chat,
       navigationOptions: {
         tabBarLabel: <></>,
-        tabBarIcon: ({tintColor}) => <Icon name="chatboxes" style={{color: tintColor}} size={25} />,
+        tabBarIcon: ({tintColor}) => <Icon_ name="wechat" style={{color: tintColor}} size={25} />,
       },
     },
     Profile: {

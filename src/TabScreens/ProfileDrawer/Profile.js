@@ -3,11 +3,6 @@ import {Text, Image, TouchableOpacity, Dimensions, View, ProgressBarAndroid, Fla
 import {getFromCache} from '../../helpers/cacheTools';
 import decode from 'jwt-decode';
 import moment from 'moment';
-import {getDataFromToken} from '../../helpers/tokenutils';
-import {getAddressFromLatAndLong} from '../../helpers/locationutils';
-import {openImagePicker} from '../../helpers/imageutils';
-import {uploadImage, getData} from '../../helpers/httpServices';
-import baseurl from '../../helpers/baseurl';
 import ImageLoad from 'react-native-image-placeholder';
 import ImageResizer from 'react-native-image-resizer';
 
@@ -26,6 +21,13 @@ import {
   Card,
   Button,
 } from 'native-base';
+import Icon_ from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import {getDataFromToken} from '../../helpers/tokenutils';
+import {getAddressFromLatAndLong} from '../../helpers/locationutils';
+import {openImagePicker} from '../../helpers/imageutils';
+import {uploadImage, getData} from '../../helpers/httpServices';
+import baseurl from '../../helpers/baseurl';
 
 export default class Profile extends React.Component {
   state = {
@@ -170,20 +172,35 @@ export default class Profile extends React.Component {
               <CardItem
                 cardBody
                 style={{
-                  height: height * 0.27,
+                  height: height * 0.3,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
                 {this.state.profile_pic_uri === '' ? (
                   <Text>Loading ....</Text>
                 ) : (
-                  <ImageLoad
-                    style={{height: height * 0.25, width: '60%', borderRadius: 20}}
-                    source={{uri: profile_pic_uri}}
-                  />
+                  <>
+                    <ImageLoad
+                      style={{overflow: 'hidden', height: height * 0.25, width: '60%', borderRadius: 20}}
+                      source={{uri: profile_pic_uri}}
+                    />
+                    <Icon_
+                      name="ship-wheel"
+                      size={50}
+                      color="orange"
+                      style={{
+                        position: 'absolute',
+                        left: '43%',
+                        right: 0,
+                        top: '80%',
+                        bottom: 0,
+                      }}
+                    />
+                  </>
                 )}
               </CardItem>
             </TouchableOpacity>
+
             {this.state.upload_fraction === 0 || this.state.upload_fraction === 1 ? null : (
               <>
                 <ProgressBarAndroid
@@ -215,8 +232,7 @@ export default class Profile extends React.Component {
             </CardItem>
             <View
               style={{
-                paddingTop: '10%',
-                height: height * 0.14,
+                height: height * 0.1,
                 flexDirection: 'row',
                 alignItems: 'space-between',
                 justifyContent: 'space-around',

@@ -133,7 +133,6 @@ const MyDrawerNavigator = createDrawerNavigator(
   {
     contentComponent: CustomDrawerContent,
     drawerPosition: 'right',
-    drawerType: 'slide',
     overlayColor: 'transparent',
     drawerWidth: SCREEN_WIDTH / 1.5,
     contentOptions: {
