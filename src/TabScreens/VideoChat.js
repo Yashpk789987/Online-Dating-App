@@ -75,7 +75,7 @@ export default class VideoChat extends React.Component {
 
   loadMatches = async () => {
     this.setState({loading: true});
-    let result = await getData(`like/load-matches-by-profileId/${this.state.user_id}`);
+    let result = await getData(`like/load-matches-by-profileId/${this.props.screenProps.me.id}`);
     if (result.ok) {
       let matches_ids = result.matches.map(m => parseInt(m.profile_id));
       this.setState({loading: false, matches_ids});
@@ -103,6 +103,7 @@ export default class VideoChat extends React.Component {
           await this.setState({calling_type: calling_type});
         }
       } catch (error) {}
+
       this.loadMatches();
     });
 

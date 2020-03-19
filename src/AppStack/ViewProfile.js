@@ -8,7 +8,7 @@ import {getAddressFromLatAndLong} from '../helpers/locationutils';
 import {uploadImage, getData, postData} from '../helpers/httpServices';
 import baseurl from '../helpers/baseurl';
 import ImageLoad from 'react-native-image-placeholder';
-
+import Icon_ from 'react-native-vector-icons/Entypo';
 import {
   Container,
   Header,
@@ -198,11 +198,9 @@ export default class Profile extends React.Component {
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
                 onPress={() => alert('Like Pressed')}>
-                <Icon name="heart" style={{color: 'red', fontSize: 30}} />
-                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>
-                  {likes === 'Loading...' ? 'Loading...' : this.findPopularity(likes, totalLikes)}
-                </Text>
-                <Text note>Popularity</Text>
+                <Icon_ name="game-controller" style={{color: 'red', fontSize: 30}} />
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>Games</Text>
+                <Text note>Invite</Text>
               </View>
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
