@@ -18,13 +18,14 @@ export default function SignUp(props) {
         paddingRight: '5%',
       }}
       source={require('../../images/bg.jpg')}>
-      <View style={{flex: 0.2, alignItems: 'center', paddingTop: '12%', paddingLeft: '20%', paddingRight: '15%'}}>
+      <View style={{flex: 0.2, alignItems: 'center', paddingTop: '12%'}}>
         <Text style={{color: 'white', fontWeight: 'bold', fontSize: 30}}>Find A Date In Your City</Text>
       </View>
-      <View style={{flex: 0.2, alignItems: 'center', paddingTop: '22%', paddingLeft: '3%', paddingRight: '3%'}}>
-        <Text style={{color: 'white', fontSize: 18}}>
-          Use Your Facebook , Google Account or Mobile Number to log back in
-        </Text>
+      <View style={{flex: 0.2, alignItems: 'center', paddingTop: '15%'}}>
+        <Text style={{color: 'white', fontSize: 18}}>Use Your Facebook , Google Account</Text>
+      </View>
+      <View style={{flex: 0.2, alignItems: 'center', paddingTop: '10%'}}>
+        <Text style={{color: 'white', fontSize: 18}}>Or Mobile Number to Log back In</Text>
       </View>
       <View style={{flex: 0.2, paddingTop: '25%', justifyContent: 'space-between', flexDirection: 'row'}}>
         <Button

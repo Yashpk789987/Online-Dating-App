@@ -27,12 +27,12 @@ const Login = function({values, touched, handleChange, handleBlur, handleSubmit,
           error={errors.path && errors.path === 'user' ? true : false}
           success={errors.path && errors.path === 'user' ? false : true}
           rounded
-          style={{marginBottom: '1%', marginTop: '5%'}}>
+          style={{marginBottom: '1%', marginTop: '5%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
             placeholder="Username  Or  Mobile No. Or  Email Id"
-            placeholderTextColor={'white'}
-            onBlur={handleBlur('email_mobile_username')}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
+            onBlur={handleBlur('email_mobile_username')}
             onChangeText={handleChange('email_mobile_username')}
           />
           {errors.path && errors.path === 'user' ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
@@ -44,10 +44,10 @@ const Login = function({values, touched, handleChange, handleBlur, handleSubmit,
           error={errors.path && errors.path === 'password' ? true : false}
           success={errors.path && errors.path === 'password' ? false : true}
           rounded
-          style={{marginBottom: '1%', marginTop: '5%'}}>
+          style={{marginBottom: '1%', marginTop: '5%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
             secureTextEntry={true}
-            placeholderTextColor={'white'}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
             placeholder="Password"
             onBlur={handleBlur('password')}

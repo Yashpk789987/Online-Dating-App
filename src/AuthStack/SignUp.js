@@ -82,11 +82,10 @@ export default function SignUp(props) {
           error={usernameError ? true : false}
           success={usernameError ? false : true}
           rounded
-          style={{marginBottom: '1%', marginTop: '2%'}}>
+          style={{marginBottom: '1%', marginTop: '2%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
-            placeholderTextColor={'white'}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
-            selectionColor={'white'}
             placeholder="Username"
             onChangeText={text => setState(prevState => ({...prevState, username: text}))}
           />
@@ -98,12 +97,12 @@ export default function SignUp(props) {
           success={emailError ? false : true}
           error={emailError ? true : false}
           rounded
-          style={{marginBottom: '1%', marginTop: '2%'}}>
+          style={{marginBottom: '1%', marginTop: '2%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
             onChangeText={text => setState(prevState => ({...prevState, email: text}))}
-            placeholderTextColor={'white'}
-            keyboardType={'email-address'}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
+            keyboardType={'email-address'}
             placeholder="Email"
           />
           {emailError ? <Icon name="close-circle" /> : <Icon name="checkmark-circle" />}
@@ -113,11 +112,11 @@ export default function SignUp(props) {
           success={phoneError ? false : true}
           error={phoneError ? true : false}
           rounded
-          style={{marginBottom: '1%', marginTop: '2%'}}>
+          style={{marginBottom: '1%', marginTop: '2%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
             keyboardType={'phone-pad'}
             onChangeText={text => setState(prevState => ({...prevState, phone: text}))}
-            placeholderTextColor={'white'}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
             placeholder="Phone"
           />
@@ -128,7 +127,7 @@ export default function SignUp(props) {
           success={dobError ? false : true}
           error={dobError ? true : false}
           rounded
-          style={{marginBottom: '1%', marginTop: '2%'}}>
+          style={{marginBottom: '1%', marginTop: '2%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <DatePicker
             maximumDate={new Date(2019, 11, 1)}
             locale={'en'}
@@ -137,8 +136,9 @@ export default function SignUp(props) {
             animationType={'slide'}
             androidMode={'calendar'}
             placeHolderText="Select Dob"
-            textStyle={{color: 'white'}}
-            placeHolderTextStyle={{color: 'white'}}
+            textStyle={{color: 'black'}}
+            placeHolderTextStyle={{color: 'black'}}
+            style={{color: 'white'}}
             onDateChange={setDate}
             disabled={false}
           />
@@ -149,10 +149,10 @@ export default function SignUp(props) {
           success={passwordError ? false : true}
           error={passwordError ? true : false}
           rounded
-          style={{marginBottom: '1%', marginTop: '2%'}}>
+          style={{marginBottom: '1%', marginTop: '2%', backgroundColor: 'rgb(255, 255, 255)', opacity: 0.6}}>
           <Input
             onChangeText={text => setState(prevState => ({...prevState, password: text}))}
-            placeholderTextColor={'white'}
+            placeholderTextColor={'black'}
             style={{color: 'white'}}
             secureTextEntry={true}
             placeholder="Password"

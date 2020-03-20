@@ -242,12 +242,17 @@ export default class Profile extends React.Component {
                 onPress={() => alert('Like Pressed')}>
                 <Icon name="eye" style={{color: 'blue', fontSize: 30}} />
                 <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>{10}</Text>
-                <Text note>Profile Views</Text>
+                <Text note>Views</Text>
               </View>
               <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                 <Icon name="person-add" style={{color: 'orange'}} />
                 <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}> </Text>
                 <Text note>Invite People</Text>
+              </View>
+              <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <Icon_ name="square-edit-outline" size={35} style={{color: 'black'}} />
+                <Text style={{color: 'black', fontWeight: 'bold'}}> </Text>
+                <Text note>Edit </Text>
               </View>
             </View>
           </Card>

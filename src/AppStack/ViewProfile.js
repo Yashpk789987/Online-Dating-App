@@ -209,12 +209,12 @@ export default class Profile extends React.Component {
                 alignItems: 'space-between',
                 justifyContent: 'space-around',
               }}>
-              <View
-                style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
-                onPress={() => alert('Like Pressed')}>
-                <Icon_ name="game-controller" style={{color: 'red', fontSize: 30}} />
-                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>Games</Text>
-                <Text note>Invite</Text>
+              <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <View>
+                  <Icon_ name="game-controller" style={{color: 'red', fontSize: 30}} />
+                </View>
+                <Text style={{color: 'black', fontSize: 22, fontWeight: 'bold'}}>Invite</Text>
+                <Text note>For Games</Text>
               </View>
               <View
                 style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
