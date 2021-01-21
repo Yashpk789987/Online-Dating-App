@@ -22,6 +22,6 @@
     "node-fetch": "^2.6.0",
     "nodemon": "^2.0.2",
     "sequelize": "4.13.5",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   }
 }
