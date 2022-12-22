@@ -16,7 +16,7 @@
     "fcm-node": "^1.5.2",
     "firebase-admin": "^8.9.2",
     "forever": "^2.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.2",
     "mysql2": "2.1.0",
     "node-fetch": "^2.6.0",
