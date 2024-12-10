@@ -21,7 +21,7 @@
     "mysql2": "2.1.0",
     "node-fetch": "^2.6.0",
     "nodemon": "^2.0.2",
-    "sequelize": "4.13.5",
+    "sequelize": "5.15.1",
     "socket.io": "^2.3.0"
   }
 }
